@@ -1,0 +1,64 @@
+/*
+    Modular css to handle various border styles.
+    border-radius styles correspond in size to things found in sizing.less (ie: for a perfectly round element, pick the same border radius as its size)
+*/
+
+@br-s-nano:               2px;
+@br-s-tiny:               4px;
+@br-s-small:              8px;
+@br-s-medium:             12px;
+@br-s-large:              16px;
+@br-s-huge:               24px;
+
+.br-ra-nano {
+    border-radius: @br-s-tiny;
+}
+.br-ra-tiny {
+    border-radius: @br-s-tiny;
+}
+.br-ra-small {
+    border-radius: @br-s-small;
+}
+.br-ra-medium {
+    border-radius: @br-s-medium;
+}
+.br-ra-large {
+    border-radius: @br-s-large;
+}
+.br-ra-huge {
+    border-radius: @br-s-huge;
+}
+
+.border-proc(@label, @size) {
+    .br-@{label} {
+        border: @size solid;
+    }
+    .br-t-@{label} {
+        border-top: @size solid;
+    }
+    .br-b-@{label} {
+        border-bottom: @size solid;
+    }
+    .br-l-@{label} {
+        border-left: @size solid;
+    }
+    .br-r-@{label} {
+        border-right: @size solid;
+    }
+    .br-horizontal-@{label} {
+        border-left: @size solid;
+        border-right: @size solid;
+    }
+    .br-vertical-@{label} {
+        border-left: @size solid;
+        border-right: @size solid;
+    }
+}
+
+/*
+    We really only want a couple of border sizes, otherwise it gets a little bit
+    ridiculous. Even a couple is too many I guess.
+*/
+.border-proc(nano, @br-s-nano);
+.border-proc(tiny, @br-s-tiny);
+.border-proc(small, @br-s-small);

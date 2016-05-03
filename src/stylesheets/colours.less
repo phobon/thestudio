@@ -1,0 +1,65 @@
+@c-white:#fff;
+
+@c-orange:#f26726;
+@c-green:#00a37d;
+
+@c-grayll:#f2f2f2;
+@c-grayl:#e0e0e0;
+@c-graym:#a0a0a0;
+@c-grayh:#606060;
+@c-grayhh:#373737;
+
+.c-transparent-bg {
+    background-color: transparent;
+}
+
+.color-proc(@label, @color) {
+    /* Generic - color, background, fill and transparent */
+    .c-@{label} {
+        color: @color;
+    }
+
+    .c-@{label}-bg {
+        background-color: @color;
+    }
+
+    .c-@{label}-f {
+        fill: @color;
+    }
+
+    .c-@{label}-t-bg {
+        background-color: fadeout(@color, 30%);
+    }
+    
+    /* Border colours */
+    .c-@{label}-br {
+        border-color: @color;
+    }
+    
+    /* Lights */
+    @light: lighten(@color, 15%);
+    .c-light-@{label} {
+        color: @light;
+    }
+
+    .c-light-@{label}-bg {
+        background-color: @light;
+    }
+    
+    .c-light-@{label}-t-bg {
+        background-color: fadeout(@light, 30%);
+    }
+
+    .c-light-@{label}-f {
+        fill: @light;
+    }
+}
+
+.color-proc(white, @c-white);
+.color-proc(orange, @c-orange);
+.color-proc(green, @c-green);
+.color-proc(grayll, @c-grayll);
+.color-proc(grayl, @c-grayl);
+.color-proc(graym, @c-graym);
+.color-proc(grayh, @c-grayh);
+.color-proc(grayhh, @c-grayhh);

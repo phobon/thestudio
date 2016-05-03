@@ -1,0 +1,40 @@
+@import "colours.less";
+@import "layout.less";
+@import "sizing.less";
+@import "borders.less";
+@import "cursor.less";
+
+.b-glyph {
+    .c-graym-f;
+    .c-graym;
+    .cur-pointer;
+    transition: fill 0.15s ease-out, color 0.15s ease-out;    
+    
+    &:hover {
+        .c-light-green-f;
+        .c-light-green;
+    }
+    
+    &.toggled {
+        .c-green-f;
+        .c-green;
+    }
+}
+
+.b-sq-glyph {
+    .c-grayh-bg;
+    .c-grayl-f;
+    .cur-pointer;    
+    .w-huge;
+    .h-huge;
+    .f;
+    .f-ai-center;
+    .f-j-center;
+    .br-ra-small;
+    transition: fill 0.15s ease-out, background-color 0.15s ease-out, opacity 0.15s ease-out;
+    
+    &:hover {
+        .c-green-bg;
+        .c-white-f;
+    }
+}

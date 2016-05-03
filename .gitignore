@@ -1,0 +1,9 @@
+node_modules/
+typings/browser/
+typings/main/
+bin/
+views/
+routes/
+public/scripts/
+public/stylesheets/
+public/images/designs/

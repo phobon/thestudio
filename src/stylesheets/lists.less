@@ -1,0 +1,27 @@
+/*
+    Modular css for lists and list orientations.
+*/
+
+@import "sizing.less";
+
+ul {
+    list-style: none;
+    .m-none;
+    .p-none;
+}
+
+.l {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.l-row {
+    .l;
+    flex-direction: row;
+}
+
+.l-col {
+    .l;
+    flex-direction: column;
+}

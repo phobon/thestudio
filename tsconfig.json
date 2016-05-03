@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "target": "es5"
+    },
+    "exclude": [
+        ".vscode",
+        "bin",
+        "node_modules",
+        "src/stylesheets",
+        "routes",
+        "views"
+    ]
+}

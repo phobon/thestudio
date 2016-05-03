@@ -1,0 +1,43 @@
+/*
+    Handle typography styles.
+    Classes are taken from font-family.less, font-sizes.less, font-spacing.less, etc.    
+*/
+
+@import "font-family.less";
+@import "font-size.less";
+@import "font-weight.less";
+@import "text-transform.less";
+@import "font-style.less";
+@import "line-height.less";
+@import "sizing.less";
+
+html {
+    .sans-serif;
+    .f6;
+}
+
+/* Setup font sizes and other specific typographic properties */
+h1 {
+    .f1;
+}
+h2 {
+    .f2;
+}
+h3 {
+    .f3;
+}
+h4 {
+    .f4;
+}
+p, span {
+    .f5;
+}
+
+/* Heading styles */
+h1, h2, h3, h4, h5, h6 {
+    .fw1;
+    .fs-normal;
+    .t-lc;
+    .lh-title;
+    .m-none;
+}

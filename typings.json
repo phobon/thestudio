@@ -1,0 +1,6 @@
+{
+  "ambientDependencies": {
+    "jquery": "registry:dt/jquery#1.10.0+20160417213236",
+    "velocity-animate": "registry:dt/velocity-animate#1.2.2+20160317120654"
+  }
+}

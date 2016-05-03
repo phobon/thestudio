@@ -1,0 +1,106 @@
+/* 
+    Modular css to define layout-related classes
+    Positioning, layout and flexbox model.
+*/
+
+@import "sizing.less";
+
+html {
+    .w-100;
+    .h-100;
+}
+
+body {
+    .m-none;
+    .p-none;
+}
+
+/* Positions */
+.fixed {
+    position: fixed;
+}
+
+.absolute {
+    position: absolute;
+}
+
+.relative {
+    position: relative;
+}
+
+/*
+    Flexbox model
+*/
+.f {
+    display: flex;
+    flex: 1 1 auto;
+}
+
+/* Handle flex grow and shrink extents */
+.f-none {
+    display: flex;
+    flex: none;
+}
+.f-grow-1 {
+    .f;
+}
+.f-grow-2 {
+    .f;
+    flex-grow: 2;
+}
+.f-grow-3 {
+    .f;
+    flex-grow: 3;
+}
+.f-shrink-1 {
+    .f;
+}
+.f-shrink-2 {
+    .f;
+    flex-shrink: 2;
+}
+.f-shrink-3 {
+    .f;
+    flex-shrink: 3;
+}
+
+/* Flex alignment and justification */
+.f-ai-start {
+    align-items: flex-start;
+}
+.f-ai-center {
+    align-items: center;
+}
+.f-ai-end {
+    align-items: flex-end;
+}
+.f-j-start {
+    justify-content: flex-start;
+}
+.f-j-center {
+    justify-content: center;
+}
+.f-j-end {
+    justify-content: flex-end;
+}
+
+/* Flex wrapping */
+.f-w {
+    flex-wrap: wrap;
+}
+
+.f-w-none {
+    flex-wrap: nowrap;
+}
+
+.f-w-reverse {
+    flex-wrap: wrap-reverse;
+}
+
+/* Direction */
+.f-d-row {
+    flex-direction: row;
+}
+.f-d-column {
+    flex-direction: column;
+}

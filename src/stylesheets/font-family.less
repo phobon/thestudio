@@ -1,0 +1,20 @@
+/*
+    Modular css for font families.
+    We went maximum compatibility here and speed here - we don't want to use web fonts at all. So we're utilizing system fonts where we can
+    This code is taken specifically from tachyons https://github.com/tachyons-css/tachyons
+    See https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/ for some details on why we would use system fonts
+    See http://mrmrs.io/writing/2016/03/17/webfonts/ for more information on web fonts and why we should avoid them
+*/
+
+@sans-serif:                -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+@serif:                     georgia, times, serif;
+@monospace:                 Consolas, monaco, monospace;
+
+.sans-serif { font-family: @sans-serif }
+.serif { font-family: @serif; }
+.system-sans-serif { font-family: sans-serif; }
+.system-serif { font-family: serif; }
+
+/* Monospaced Typefaces (for code) */
+/* From http://cssfontstack.com */
+code, .code { font-family: @monospace; }

@@ -1,0 +1,128 @@
+@s-none: 0px;
+@s-nano:        4px;
+@s-tiny:        8px;
+@s-small:       16px;
+@s-medium:      24px;
+@s-large:       32px;
+@s-huge:        48px;
+
+@s-100: 100%;
+@s-90: 90%;
+@s-50: 50%;
+@s-33: 33.3333333333%;
+@s-25: 25%;
+
+.w-auto {
+    width: auto;
+}
+.h-auto {
+    height: auto;
+}
+
+.sizing-procs (@label, @size) {
+    /* Margins */
+    .m-@{label} {
+        margin: @size;
+    }   
+    .m-l-@{label} {
+        margin-left: @size;
+    }
+    .m-r-@{label} {
+        margin-right: @size;
+    }
+    .m-horizontal-@{label} {
+        margin-left: @size;
+        margin-right: @size;
+    }
+    .m-t-@{label} {
+        margin-top: @size;
+    }
+    .m-b-@{label} {
+        margin-bottom: @size;
+    }
+    .m-vertical-@{label} {
+        margin-top: @size;
+        margin-bottom: @size;
+    }
+
+    /* Paddings */
+    .p-@{label} {
+        padding: @size;
+    }
+    .p-l-@{label} {
+        padding-left: @size;
+    }
+    .p-r-@{label} {
+        padding-right: @size;
+    }
+    .p-horizontal-@{label} {
+        padding-left: @size;
+        padding-right: @size;
+    }   
+    .p-t-@{label} {
+        padding-top: @size;
+    }
+    .p-b-@{label} {
+        padding-bottom: @size;
+    }
+    .p-vertical-@{label} {
+        padding-top: @size;
+        padding-bottom: @size;
+    }
+
+    /* Height & Width */
+    .h-@{label} {
+        height: @size;
+    }
+    .h-min-@{label} {
+        min-height: @size;
+    }
+    .w-@{label} {
+        width: @size;
+    }
+    .w-min-@{label} {
+        min-width: @size;
+    }
+}
+
+/* Process sizing classes */
+.sizing-procs(none, @s-none);
+.sizing-procs(nano, @s-nano);
+.sizing-procs(tiny, @s-tiny);
+.sizing-procs(small, @s-small);
+.sizing-procs(medium, @s-medium);
+.sizing-procs(large, @s-large);
+.sizing-procs(huge, @s-huge);
+
+/* Misc sizing */
+.w-100 { width: @s-100; }
+.w-max-100 { max-width: @s-100; }
+.h-100 { height: @s-100; }
+.h-max-100 { max-height: @s-100; }
+
+.w-90 { width: @s-90; }
+.w-max-90 { max-width: @s-90; }
+.h-90 { height: @s-90; }
+.h-max-90 { max-height: @s-90; }
+
+.w-50 { width: @s-50; }
+.w-max-50 { max-width: @s-50; }
+.h-50 { height: @s-50; }
+.h-max-50 { max-height: @s-50; }
+
+.w-33 { width: @s-33; }
+.w-max-33 { max-width: @s-33; }
+.h-33 { height: @s-33; }
+.h-max-33 { max-height: @s-33; }
+
+.w-25 { width: @s-25; }
+.w-max-25 { max-width: @s-25; }
+.h-25 { height: @s-25; }
+.h-max-25 { max-height: @s-25; }
+
+.w-auto {
+    width: auto;
+}
+.h-auto {
+    height: auto;
+}

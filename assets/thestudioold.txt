@@ -1,0 +1,974 @@
+/// <reference path="typings/velocity-animate/velocity-animate.d.ts" />
+/// <reference path="typings/requirejs/require.d.ts" />
+/// <reference path="typings/jquery.thestudio/jquery.thestudio.d.ts"/>
+var __extends = (this && this.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/* Common functions. */
+var Common;
+(function (Common) {
+    var Cache = (function () {
+        function Cache() {
+            this.cachedPromises = {};
+        }
+        Cache.prototype.createCache = function (requestFunction) {
+            var _this = this;
+            return function (key, callback) {
+                if (!_this.cachedPromises[key]) {
+                    _this.cachedPromises[key] = $.Deferred(function (defer) {
+                        requestFunction(defer, key);
+                    }).promise();
+                }
+                return _this.cachedPromises[key].done(callback);
+            };
+        };
+        return Cache;
+    })();
+    Common.Cache = Cache;
+    Common.cache = new Cache();
+    var Event = (function () {
+        function Event() {
+        }
+        Event.prototype.on = function (handler) {
+            if (!this.handlers) {
+                this.handlers = [];
+            }
+            this.handlers.push(handler);
+        };
+        Event.prototype.off = function (handler) {
+            if (this.handlers) {
+                this.handlers = this.handlers.filter(function (h) { return h !== handler; });
+                if (this.handlers.length == 0) {
+                    this.handlers = null;
+                }
+            }
+        };
+        Event.prototype.trigger = function (data) {
+            if (this.handlers) {
+                this.handlers.forEach(function (h) { return h(data); });
+            }
+        };
+        return Event;
+    })();
+    Common.Event = Event;
+})(Common || (Common = {}));
+var Data;
+(function (Data) {
+    Data.glyphMap = {
+        "menu": "<svg xmlns='http://www.w3.org/2000/svg' version='1.1' x='0' y='0' width='48' height='32' viewBox='0 0 14 10' xml:space='preserve' enable-background='new 0 0 14 10'><g><path d='M1 2h12c0.55 0 1-0.45 1-1s-0.45-1-1-1H1C0.45 0 0 0.45 0 1S0.45 2 1 2z' style='clip-rule:evenodd;fill-rule:evenodd'/><path d='M13 4H1C0.45 4 0 4.45 0 5s0.45 1 1 1h12c0.55 0 1-0.45 1-1S13.55 4 13 4z' style='clip-rule:evenodd;fill-rule:evenodd'/><path d='M13 8H1C0.45 8 0 8.45 0 9s0.45 1 1 1h12c0.55 0 1-0.45 1-1S13.55 8 13 8z' style='clip-rule:evenodd;fill-rule:evenodd'/></g></svg>",
+        "brand": "",
+        "facebook": '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" width="48" height="48" viewBox="0 0 16 16" xml:space="preserve" enable-background="new 0 0 16 16"><g><path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8 8-3.58 8-8S12.42 0 8 0zM11 5h-1C9.15 5 9 5 9 7h2v2H9v4H7V9H5V7h2c0-1.53 0-4 3-4h1V5z" style="clip-rule: evenodd; fill-rule: evenodd"></path></g></svg>',
+        "twitter": '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" width="48" height="48" viewBox="0 0 16 16" xml:space="preserve" enable-background="new 0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8s3.58 8 8 8c4.42 0 8-3.58 8-8S12.42 0 8 0zM11.99 5.99c0 0.09 0.01 0.17 0.01 0.26 0 2.67-2.03 5.75-5.74 5.75 -1.14 0-2.2-0.34-3.09-0.91 0.16 0.02 0.33 0.03 0.49 0.03 0.95 0 1.83-0.32 2.52-0.86 -0.88-0.02-1.6-0.6-1.86-1.4C4.44 8.88 4.62 8.89 4.75 8.89c0.18 0 0.47-0.02 0.64-0.07C4.47 8.63 4 7.82 4 6.84c0-0.01 0-0.02 0-0.03 0 0.15 0.36 0.24 0.69 0.25 -0.54-0.36-1.12-0.98-1.12-1.68 0-0.37 0.1-0.72 0.27-1.01 1 1.22 2.48 2.03 4.16 2.11C7.97 6.33 7.95 6.18 7.95 6.02 7.95 4.9 8.86 4 9.97 4c0.58 0 1.11 0.25 1.48 0.64 0.46-0.09 0.89-0.26 1.28-0.49 -0.15 0.47-0.47 0.87-0.89 1.12 0.41-0.05 0.8-0.16 1.16-0.32C12.73 5.35 12.39 5.71 11.99 5.99z" style="clip-rule: evenodd; fill-rule: evenodd"></path></svg>'
+    };
+})(Data || (Data = {}));
+var Structure;
+(function (Structure) {
+    var ShellComponent = (function () {
+        function ShellComponent(name, site, data) {
+            this._isVisible = false;
+            this._name = name;
+            this._site = site;
+            this._data = data;
+            this._id = ShellComponent.componentIndex++;
+        }
+        Object.defineProperty(ShellComponent.prototype, "id", {
+            get: function () {
+                return this._id;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "name", {
+            get: function () {
+                return this._name;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "site", {
+            get: function () {
+                return this._site;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "isVisible", {
+            get: function () {
+                return this._isVisible;
+            },
+            set: function (value) {
+                if (this._isVisible === value) {
+                    return;
+                }
+                this._isVisible = value;
+                this._isVisible ? this._shown.trigger() : this._hidden.trigger();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "data", {
+            get: function () {
+                return this._data;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "top", {
+            get: function () {
+                return this._top;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "bottom", {
+            get: function () {
+                return this._bottom;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "shown", {
+            get: function () {
+                return this._shown;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(ShellComponent.prototype, "hidden", {
+            get: function () {
+                return this._hidden;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        ShellComponent.prototype.init = function () {
+            var _this = this;
+            this._shown = new Common.Event();
+            this._hidden = new Common.Event();
+            this._shown.on(function () { _this.onShown(); });
+            this._hidden.on(function () { _this.onHidden(); });
+        };
+        ShellComponent.prototype.layout = function () {
+            var offset = this.site.offset();
+            this._top = offset.top;
+            this._bottom = this._top + this.site.outerHeight();
+            ;
+        };
+        ShellComponent.prototype.destroy = function () {
+            var _this = this;
+            this._shown.off(function () { _this.onShown(); });
+            this._hidden.off(function () { _this.onHidden(); });
+        };
+        ShellComponent.prototype.onShown = function () {
+            console.log("component: " + this.name + " shown");
+            this._content.velocity({ opacity: [1, 0], translateX: [0, -50] }, { duration: 1200, easing: "easeOutExpo" });
+        };
+        ShellComponent.prototype.onHidden = function () {
+            console.log("component: " + this.name + " hidden");
+            this._content.velocity({ opacity: [0, 1], translateX: [-50, 0] }, { duration: 800, delay: 250, easing: "easeOutExpo" });
+        };
+        ShellComponent.componentIndex = 0;
+        return ShellComponent;
+    })();
+    Structure.ShellComponent = ShellComponent;
+})(Structure || (Structure = {}));
+var TheStudio;
+(function (TheStudio) {
+    var Header = (function (_super) {
+        __extends(Header, _super);
+        function Header(site, data) {
+            _super.call(this, "header", site, data);
+        }
+        Object.defineProperty(Header.prototype, "isHighlighted", {
+            get: function () {
+                return this._isHighlighted;
+            },
+            set: function (value) {
+                if (this._isHighlighted === value) {
+                    return;
+                }
+                this._isHighlighted = value;
+                this._isHighlighted ? this.highlighted.trigger() : this.cleared.trigger();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Header.prototype, "highlighted", {
+            get: function () {
+                return this._highlighted;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Header.prototype, "cleared", {
+            get: function () {
+                return this._cleared;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Header.prototype.init = function () {
+            var _this = this;
+            this._highlighted = new Common.Event();
+            this._cleared = new Common.Event();
+            this._highlighted.on(function () {
+                _this.onHighlighted();
+            });
+            this._cleared.on(function () {
+                _this.onCleared();
+            });
+        };
+        Header.prototype.layout = function () {
+            var headerMarkup = "<ul class='menu-toggle'>";
+            headerMarkup += "<li class='menu'>" + Data.glyphMap['menu'] + "</li>";
+            headerMarkup += "<li class='brand-title'><p>the studio</p></li>";
+            headerMarkup += "<li class='flexible'></li></ul>";
+            this.site.append(headerMarkup);
+            var navigationMarkup = "<nav class='hidden'><ul class='menu'>";
+            this.data.forEach(function (navigationItem) {
+                navigationMarkup += "<li><a href='" + navigationItem.link + "'>" + navigationItem.text + "</a></li>";
+            });
+            navigationMarkup += "<li class='social'><a href='http://facebook.com/thestudiophysio' target='_blank'>" + Data.glyphMap['facebook'] + "</a></li>";
+            navigationMarkup += "<li class='social'><a href='http://twitter.com/thestudiophysio' target='_blank'>" + Data.glyphMap['twitter'] + "</a></li>";
+            // Booking button.
+            //navigationMarkup += `<li class='brand-button book-button' onclick="FormletOpen(&#39;5691bc2de8dc42b87fc4f42e&#39;);" id="5691bc2de8dc42b87fc4f42e">book now</li>`;
+            navigationMarkup += "</ul></nav>";
+            this._content = $(navigationMarkup).appendTo(this.site);
+            //this._booking = this._content.find(".book-button");
+            //this._booking.click(function() {
+            //    shell.booking.isOpen = true;
+            //});
+            this._navigationSite = this.site.find("nav");
+            // Hook up navigation events if required.
+            var that = this;
+            $(".menu-toggle").click(function () {
+                that.site.toggleClass("highlighted");
+                that._navigationSite.toggleClass("hidden");
+            });
+            // Whenever we click on a link, the menu disappears.
+            this._navigationSite.find("a").click(function () {
+                that.site.toggleClass("highlighted");
+                that._navigationSite.toggleClass("hidden");
+            });
+            _super.prototype.layout.call(this);
+        };
+        Header.prototype.onHighlighted = function () {
+            this.site.addClass("highlighted-landscape");
+        };
+        Header.prototype.onCleared = function () {
+            this.site.removeClass("highlighted-landscape");
+        };
+        return Header;
+    })(Structure.ShellComponent);
+    TheStudio.Header = Header;
+    var Brand = (function (_super) {
+        __extends(Brand, _super);
+        function Brand(site, data) {
+            _super.call(this, "brand", site, data);
+        }
+        Brand.prototype.init = function () {
+            _super.prototype.init.call(this);
+        };
+        Brand.prototype.layout = function () {
+            var brandMarkup = "<img src='images/thestudio_logo_only.png'>";
+            brandMarkup += "<div class='blurb'>";
+            brandMarkup += "<h1>" + this.data.header + "</h1>";
+            brandMarkup += "<p>" + this.data.text + "</p>";
+            // Call to action button.
+            brandMarkup += "<a href='#map' class='brand-button'>come and see us!</a>";
+            brandMarkup += "</div>";
+            this._content = $(brandMarkup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Brand;
+    })(Structure.ShellComponent);
+    TheStudio.Brand = Brand;
+    var What = (function (_super) {
+        __extends(What, _super);
+        function What(site, data) {
+            _super.call(this, "what", site, data);
+            this.serviceGlyphs = {
+                "physio": '<svg xmlns="http://www.w3.org/2000/svg" style="width: 250px; fill:#efd193; margin: 8px 0;" version="1.1" x="0" y="0" viewBox="0 0 100 53.4" xml:space="preserve" enable-background="new 0 0 100 53.4"><path d="M99 28.2c1.4-1.4 1.4-3.7 0-5.1 -1.4-1.4-3.7-1.4-5.1 0 -0.1 0.1-0.2 0.3-0.3 0.4 -0.1 0-0.1 0.1-0.2 0.1l-4.5 4.5 -3 3 0 0c0 0 0 0 0 0l-2.3 2.3c0 0 0 0 0 0l-0.4-0.4 15.4-15.4c0.1-0.1 0.1-0.1 0.1-0.2 0.1-0.1 0.3-0.2 0.4-0.3 1.4-1.4 1.4-3.7 0-5.1s-3.7-1.4-5.1 0c-0.1 0.1-0.2 0.3-0.3 0.4 -0.1 0-0.1 0.1-0.2 0.1L78.1 28l-0.6-0.6L95.6 9.3c0.1-0.1 0.1-0.1 0.1-0.2C95.9 9 96 8.9 96.1 8.7c1.4-1.4 1.4-3.7 0-5.1s-3.7-1.4-5.1 0c-0.1 0.1-0.2 0.3-0.3 0.4 -0.1 0-0.1 0.1-0.2 0.1L72.4 22.3l-0.6-0.6 2.3-2.3 3-3 8.2-8.2c0.1-0.1 0.1-0.1 0.1-0.2 0.1-0.1 0.3-0.2 0.4-0.3 1.4-1.4 1.4-3.7 0-5.1 -1.4-1.4-3.7-1.4-5.1 0 -0.1 0.1-0.2 0.3-0.3 0.4 -0.1 0-0.1 0.1-0.2 0.1L64.6 18.8l-1.7 1.7 -2.3 2.3 -0.1 0.1 -1.1 1.1L59 24.4v-8.8c0-0.1 0-0.2-0.1-0.2 0-0.2 0.1-0.3 0.1-0.5 0-2-1.6-3.6-3.6-3.6 -2 0-3.6 1.6-3.6 3.6 0 0.2 0 0.3 0.1 0.5 0 0.1-0.1 0.2-0.1 0.2v16.6 1c0 0 0 0 0 0 -0.1 1.1-0.1 2.3 0 3.4 0.3 2.8 1.1 5.6 2.6 8 0.8 1.2 1.7 2.4 2.7 3.5 2.6 2.6 5.7 4.2 9 5 1.6 0.4 3.3 0.5 5 0.5 1.7-0.1 3.3-0.8 4.5-2l5.7-5.7 1.2-1.2 4-4 12-12c0.1-0.1 0.1-0.1 0.1-0.2C98.8 28.4 98.9 28.3 99 28.2z"/><path d="M1.2 28c-1.4-1.4-1.4-3.7 0-5.1 1.4-1.4 3.7-1.4 5.1 0 0.1 0.1 0.2 0.3 0.3 0.4 0.1 0 0.1 0.1 0.2 0.1l4.5 4.5 3 3 0 0c0 0 0 0 0 0l2.3 2.3c0 0 0 0 0 0l0.4-0.4L1.7 17.5c-0.1-0.1-0.1-0.1-0.1-0.2 -0.1-0.1-0.3-0.2-0.4-0.3 -1.4-1.4-1.4-3.7 0-5.1s3.7-1.4 5.1 0c0.1 0.1 0.2 0.3 0.3 0.4 0.1 0 0.1 0.1 0.2 0.1l15.4 15.4 0.6-0.6L4.7 9.1C4.6 9.1 4.6 9 4.5 8.9 4.4 8.8 4.3 8.7 4.2 8.6c-1.4-1.4-1.4-3.7 0-5.1s3.7-1.4 5.1 0c0.1 0.1 0.2 0.3 0.3 0.4C9.6 4 9.7 4 9.7 4.1l18.1 18.1 0.6-0.6 -2.3-2.3 -3-3L14.9 8c-0.1-0.1-0.1-0.1-0.1-0.2 -0.1-0.1-0.3-0.2-0.4-0.3 -1.4-1.4-1.4-3.7 0-5.1s3.7-1.4 5.1 0c0.1 0.1 0.2 0.3 0.3 0.4 0.1 0 0.1 0.1 0.2 0.1l15.7 15.7 1.7 1.7 2.3 2.3 0.1 0.1 1.1 1.1 0.5 0.5v-8.8c0-0.1 0-0.2 0.1-0.2 0-0.2-0.1-0.3-0.1-0.5 0-2 1.6-3.6 3.6-3.6 2 0 3.6 1.6 3.6 3.6 0 0.2 0 0.3-0.1 0.5 0 0.1 0.1 0.2 0.1 0.2V32v1c0 0 0 0 0 0 0.1 1.1 0.1 2.3 0 3.4 -0.3 2.8-1.1 5.6-2.6 8 -0.8 1.2-1.7 2.4-2.7 3.5 -2.6 2.6-5.7 4.2-9 5 -1.6 0.4-3.3 0.5-5 0.5 -1.7-0.1-3.3-0.8-4.5-2l-5.7-5.7 -1.2-1.2 -4-4 -12-12c-0.1-0.1-0.1-0.1-0.1-0.2C1.5 28.2 1.3 28.2 1.2 28z"/></svg>',
+                "pilates": '<svg xmlns="http://www.w3.org/2000/svg" style="width: 150px;" version="1.1" id="Layer_1" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve" enable-background="new 0 0 100 100"><style type="text/css">.st1{fill:none;stroke:#FFFFFF;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}</style><circle cx="50" cy="50" r="50" fill="#3EA36B"/><path class="st1" d="M46 24.3C34.8 26 26 34.8 24.3 46"/><path class="st1" d="M24.3 54C26 65.2 34.8 74 46 75.7"/><path class="st1" d="M75.7 46C74 34.8 65.2 26 54 24.3"/><path class="st1" d="M54 75.7C65.2 74 74 65.2 75.7 54"/></svg>',
+                "shop": '<svg xmlns="http://www.w3.org/2000/svg" style="width: 150px;" version="1.1" id="Layer_1" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve" enable-background="new 0 0 100 100"><path d="M83.1 20.3l-8.8-5.5 -14.6-1.5c0 4.3-5.1 9.3-9.8 9.6 -4.7-0.3-9.8-5.2-9.8-9.6l-14.6 1.5 -8.8 5.5 6 18.7 5.9-1.7 -3.7 41.1 25.3 8.4 24.4-8.4 -3.7-41.1 5.9 1.7L83.1 20.3z" style="fill:#FBB040;stroke-linejoin:round;stroke-miterlimit:10;stroke:#FBB040"/></svg>'
+            };
+        }
+        What.prototype.layout = function () {
+            var _this = this;
+            var whatMarkup = "<h1><span>what</span> we do</h1>";
+            whatMarkup += "<p>find out what we can offer you</p>";
+            whatMarkup += "<hr/>";
+            whatMarkup += "<ul>";
+            this.data.forEach(function (service) {
+                whatMarkup += "<li>";
+                whatMarkup += _this.serviceGlyphs[service.id];
+                whatMarkup += "<h2>" + service.name + "</h2>";
+                whatMarkup += "<p>" + service.shortDescription + "</p>";
+                whatMarkup += `<a class='button' style='margin:16px 0;' href='#${service.id}'>find out more about ${service.name}</a>`;
+                whatMarkup += "</li>";
+            });
+            whatMarkup += "</ul>";
+            this._content = $(whatMarkup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return What;
+    })(Structure.ShellComponent);
+    TheStudio.What = What;
+    var Map = (function (_super) {
+        __extends(Map, _super);
+        function Map(site) {
+            _super.call(this, "map", site, null);
+        }
+        Map.prototype.layout = function () {
+            this._content = $("<iframe width='100%' height='100%' frameborder='0' style='border: 0; pointer-events: none;' src='https://www.google.com/maps/embed/v1/place?q=The%20Studio%20Physiotherapy%20&key=AIzaSyBZq9HLnT1O9gM8cUgwBfLqLe-GA1i2UFE&zoom=19'></iframe>").appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Map;
+    })(Structure.ShellComponent);
+    TheStudio.Map = Map;
+    var Contact = (function (_super) {
+        __extends(Contact, _super);
+        function Contact(site, data) {
+            _super.call(this, "contact", site, data);
+        }
+        Contact.prototype.layout = function () {
+            var markup = "<h1><span>where</span> we are</h1>";
+            markup += "<p>contact us via email, phone or just drop in to say hello!</p>";
+            markup += "<hr />";
+            markup += "<ul class='contact-list'>";
+            markup += "<li class='email-link' data-email-name='reception'><span class='glyph email'></span></li>";
+            markup += "<li><span class='glyph phone'></span><p>9388 8993</p></li>";
+            markup += "<li><span class='glyph home'></span><p>1/3 Sheen St, Subiaco</p></li>";
+            markup += "<hr />";
+            markup += "<ul id='opening-hours'>";
+            // Get the current day, so we can highlight what it is for the user.
+            var d = new Date().getDay() - 1;
+            for (var i = 0; i < this.data.length; i++) {
+                var openingTime = this.data[i];
+                var css = "";
+                if (d === i) {
+                    css = "selected";
+                }
+                markup += "<li><ul class='day-container " + css + "'>";
+                markup += "<li class='day'>" + openingTime.day + "</li>";
+                markup += "<li class='time'>" + openingTime.open + " - " + openingTime.close + "</li>";
+                markup += "</li></ul>";
+            }
+            markup += "</ul>";
+            this._content = $(markup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Contact;
+    })(Structure.ShellComponent);
+    TheStudio.Contact = Contact;
+    var Philosophy = (function (_super) {
+        __extends(Philosophy, _super);
+        function Philosophy(site, data) {
+            _super.call(this, "philosophy", site, data);
+        }
+        Philosophy.prototype.layout = function () {
+            var markup = "<div>";
+            markup += "<h1>" + this.data.header + "</h1>";
+            markup += "<hr/>";
+            markup += "<p>" + this.data.text + "</p>";
+            markup += "</div>";
+            this._content = $(markup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Philosophy;
+    })(Structure.ShellComponent);
+    TheStudio.Philosophy = Philosophy;
+    var Services = (function (_super) {
+        __extends(Services, _super);
+        function Services(site, data) {
+            _super.call(this, "services", site, data);
+        }
+        Services.prototype.layout = function () {
+            var markup = "<ul>";
+            for (var i = 0; i < this.data.length; i++) {
+                var service = this.data[i];
+                    markup += "<li id='" + service.id + "'>";
+                    markup += "<div class='service-image " + service.id + "'></div>";
+                    markup += "<div class='service-content' data-serviceid='" + service.id + "'>";
+                    markup += "<h1>" + service.name + "</h1>";
+                    markup += "<p>" + service.description + "</p>";
+                    markup += "<hr/>";
+                    
+                if (service.isConsult) {
+                    markup += "<ul>";
+                    for (var c = 0; c < service.consults.length; c++) {
+                        var consult = service.consults[c];
+                        markup += "<li>";
+                        markup += "<ul>";
+                        markup += "<li class='consult'>" + consult.name + "</li>";
+                        markup += "<li class='time'>" + consult.time + "</li>";
+                        markup += "<li class='price'>" + consult.price + "</li>";
+                        markup += "</ul>";
+                        markup += "</li>";
+                    }
+                    
+                } else {                    
+                    markup += "<ul class='products'>";
+                    for (var p = 0; p < service.products.length; p++) {
+                        markup += "<li>" + service.products[p] + "</li>";
+                    }
+                }
+                
+                markup += "</ul>";
+                markup += "</div>";
+                markup += "</li>";
+            }
+            markup += "</ul>";
+            this._content = $(markup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Services;
+    })(Structure.ShellComponent);
+    TheStudio.Services = Services;
+    var Who = (function (_super) {
+        __extends(Who, _super);
+        function Who(site, data) {
+            _super.call(this, "who", site, data);
+        }
+        Who.prototype.layout = function () {
+            var markup = "<h1><span>meet</span> the crew</h1>";
+            markup += "<p>we're dedicated to helping you feel your best!</p>";
+            markup += "<hr /><ul>";
+            for (var i = 0; i < this.data.length; i++) {
+                var person = this.data[i];
+                markup += "<li>";
+                markup += "<div id='" + person.name + "'>";
+                markup += "<h2>" + person.name + "</h2>";
+                markup += "<p>" + person.quote + "</p>";
+                markup += "<hr/>";
+                markup += "</div>";
+                markup += "</li>";
+            }
+            markup += "</ul>";
+            this._content = $(markup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Who;
+    })(Structure.ShellComponent);
+    TheStudio.Who = Who;
+    var Booking = (function (_super) {
+        __extends(Booking, _super);
+        function Booking(site, data) {
+            _super.call(this, "booking", site, data);
+        }
+        Object.defineProperty(Booking.prototype, "isOpen", {
+            get: function () {
+                return this._isOpen;
+            },
+            set: function (value) {
+                if (this._isOpen === value) {
+                    return;
+                }
+                this._isOpen = value;
+                this._isOpen ? this._opened.trigger() : this._closed.trigger();
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Booking.prototype, "opened", {
+            get: function () {
+                return this._opened;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Booking.prototype, "closed", {
+            get: function () {
+                return this._closed;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Booking.prototype, "bookingDetails", {
+            get: function () {
+                return this._bookingDetails;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Booking.prototype.init = function () {
+            var _this = this;
+            _super.prototype.init.call(this);
+            this._opened = new Common.Event();
+            this._closed = new Common.Event();
+            this._opened.on(function () {
+                _this.onOpened();
+            });
+            this._closed.on(function () {
+                _this.onClosed();
+            });
+            this.bookingDetails = {
+                name: "",
+                contactDetails: "",
+                physio: "",
+                service: "",
+                times: [],
+                days: []
+            };
+        };
+        Booking.prototype.layout = function () {
+            var that = this;
+            this._content = $("<div class='modal-container'></div>").appendTo(this.site);
+            this._content.append("<div class='modal-header'><h2><span>contact</span> us</h2><p>fill out the form and we'll get back to you about a booking</p></div>");
+            var container = $("<div class='modal-content'></div>").appendTo(this._content);
+            var contactDetails = $("<ul class='contact-details'></ul>").appendTo(container);
+            contactDetails.append("<li><span class='label'>name</span><input type='text' id='from-name'/></li>");
+            //contactDetails.append("<li><span class='label'>email</span><input type='text' id='from-email'/></li>");
+            contactDetails.append("<li><span class='label'>contact details</span><input type='text' id='from-contact'/></li>");
+            var preferredPhysio = $("<ul class='preferred-physio'><li class='section-header'>who would you like to see?</li><li class='text-button' data-physio='nopref'>no preference</li></ul>").appendTo(container);
+            this.data.people.forEach(function (p) {
+                if (p.isActive) {
+                    preferredPhysio.append("<li data-physio='" + p.name + "' class='physio-bubble " + p.name + "-bg'><span>" + p.name + "</span></li>");
+                }
+            });
+            preferredPhysio.find("> .physio-bubble").click(function () {
+                var activePhysio = preferredPhysio.find("> .physio-bubble.selected");
+                if (activePhysio.length > 0) {
+                    activePhysio.removeClass("selected");
+                    activePhysio.addClass("unselected");
+                }
+                $(this).addClass("selected");
+                $(this).removeClass("unselected");
+                that.bookingDetails.physio = $(this).attr("data-physio");
+            });
+            var preferredTreatment = $("<ul class='preferred-treatment'><li class='section-header'>what would you like to do?</li></ul>").appendTo(container);
+            this.data.services.forEach(function (s, i, array) {
+                var service = $("<li data-treatment='" + s.id + "' class='turquoise-toggle'>" + s.name + "</li>").appendTo(preferredTreatment);
+                if (i === 0) {
+                    service.addClass("toggled");
+                    service.css({ "margin-right": "16px" });
+                }
+            });
+            preferredTreatment.find(".turquoise-toggle:first-child").addClass("toggled");
+            // TODO: Preferred treatment can only select one.
+            var preferredTime = $("<ul class='preferred-time'><li class='section-header'>what times suit you?</li></ul>").appendTo(container);
+            preferredTime.append("<li data-time='morning' class='selected'>" + Booking.dayGlyph + "</li>");
+            preferredTime.append("<li data-time='afternoon' class='selected'>" + Booking.dayGlyph + "</li>");
+            preferredTime.append("<li data-time='evening' class='selected'>" + Booking.dayGlyph + "</li>");
+            var preferredDay = $("<ul class='preferred-day'><li class='section-header'>any days you prefer?</li></ul>").appendTo(container);
+            this.data.openingTimes.forEach(function (o) {
+                if (o.isOpen) {
+                    preferredDay.append("<li data-day='" + o.day + "' class='selected'>" + o.day + "</li>");
+                }
+            });
+            var actions = $("<ul class='actions'><li class='close'>don't worry about it</li><li class='orange-button'>send it!</li></ul>").appendTo(container);
+            this._close = actions.find(".close");
+            this._submit = actions.find(".orange-button");
+            this._close.click(function () {
+                that.isOpen = false;
+            });
+            this._submit.click(function () {
+                that.commit();
+            });
+            _super.prototype.layout.call(this);
+        };
+        //private hookupForm(site: JQuery) {
+        //    // TODO: form validation :(
+        //    site.find("#submit-form").click(() => this.commitBooking());
+        //}
+        Booking.prototype.commit = function () {
+            var button = this.site.find("#submit-form").addClass("disabled");
+            // Compile form data.
+            var css = '<style>.label { background-color: #ad3b43; color: white; text-transform: uppercase; text-align: right; display: inline-block; margin: 0 10px 10px 0; font-size: 12px; padding: 2px 5px; } .value { }</style>';
+            var header = '<h3>contact details</h3>';
+            var email = "<div><span class=\"label\">email:</span>" + this.site.find('#from-email').val() + "</div>";
+            var name = "<div><span class=\"label\">name:</span>" + this.site.find('#from-name').val() + "</div>";
+            var contact = "<div><span class=\"label\">contact:</span>" + this.site.find('#from-contact').val() + "</div>";
+            var treatmentDetailsHeader = '<h3>treatment details</h3>';
+            var preferredPhysio = "<div><span class=\"label\">preferred physio:</span>" + this.site.find('#preferred-physio').val() + "</div>";
+            var treatmentType = "<div><span class=\"label\">treatment type:</span>" + this.site.find('#treatment-type').val() + "</div>";
+            var preferredTimes = '<div><span class="label">preferred times:</span>';
+            this.site.find('input[name="preferredTime"]:checked').each(function () {
+                preferredTimes += this.value + ", ";
+            });
+            preferredTimes = preferredTimes.substring(0, preferredTimes.length - 2);
+            preferredTimes += '</div>';
+            var preferredDays = '<div><span class="label">preferred days:</span>';
+            this.site.find('input[name="preferredDay"]:checked').each(function () {
+                preferredDays += this.value + ", ";
+            });
+            preferredDays = preferredDays.substring(0, preferredDays.length - 2);
+            preferredDays += '</div>';
+            var responseHtml = "<html><head>" + css + "</head><body>" + header + name + email + contact + treatmentDetailsHeader + preferredPhysio + treatmentType + preferredTimes + preferredDays + "</body></html>";
+            $.ajax({
+                type: "POST",
+                url: "https://mandrillapp.com/api/1.0/messages/send.json",
+                data: {
+                    'key': 'kMT1t5sKlFirCHmRt3vIww',
+                    'message': {
+                        'from_email': 'reception@thestudiophysio.com',
+                        'from_name': 'The Studio Website Booking Form',
+                        'to': [
+                            {
+                                'email': 'reception@thestudiophysio.com',
+                                'name': 'The Studio Physiotherapy & Clinical Pilates',
+                                'type': 'to'
+                            },
+                            {
+                                'email': 'sjamespt@hotmail.com',
+                                'name': 'The Studio Physiotherapy & Clinical Pilates',
+                                'type': 'to'
+                            }
+                        ],
+                        'autotext': 'true',
+                        'subject': 'Booking enquiry from the website',
+                        'html': responseHtml
+                    },
+                    dataType: 'html'
+                }
+            }).done(function () {
+                var markup = "<h2>Thanks! We'll be in touch soon. If we don't, please contact us via <a href='mailto:reception@thestudiophysio.com'>email</a></h2>";
+                var notification = $("#notification").empty();
+                notification.append(markup).show();
+                notification.velocity({ opacity: [0, 1] }, {
+                    duration: 300,
+                    delay: 5000,
+                    complete: function () {
+                        notification.hide();
+                    }
+                });
+            }).fail(function (m) {
+                // Failture notification.
+                var markup = "<h2>Oops! Something went wrong. Try contact us via <a href='mailto:reception@thestudiophysio.com'>email</a></h2>";
+                var notification = $("#notification").empty();
+                notification.append(markup).show();
+                notification.velocity({ opacity: [0, 1] }, {
+                    duration: 300,
+                    delay: 5000,
+                    complete: function () {
+                        notification.hide();
+                    }
+                });
+            }).always(function () {
+                button.removeClass("disabled");
+            });
+        };
+        Booking.prototype.onOpened = function () {
+            this.site.css({ display: "flex" });
+            var s = [
+                { e: this.site, p: { opacity: [1, 0] }, o: { duration: 300, easing: "easeOutExpo" } },
+                { e: this._content, p: { opacity: [1, 0], translateX: [0, -25] }, o: { duration: 300, easing: "easeOutExpo" } }
+            ];
+            $.Velocity.RunSequence(s);
+        };
+        Booking.prototype.onClosed = function () {
+            var _this = this;
+            var s = [
+                { e: this._content, p: { opacity: [0, 1], translateX: [25, 0] }, o: { duration: 300, easing: "easeOutExpo" } },
+                { e: this.site, p: { opacity: [0, 1] }, o: { duration: 300, easing: "easeOutExpo", complete: function () {
+                            _this.site.css({ display: "none" });
+                        } } }
+            ];
+            $.Velocity.RunSequence(s);
+        };
+        Booking.dayGlyph = '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" viewBox="0 0 100 100" xml:space="preserve" enable-background="new 0 0 100 100"><style type="text/css">.st0{fill:none;stroke:#FBA919;stroke-width:4;stroke-linecap:round;stroke-miterlimit:10;}.st1{fill: none; stroke: #FFF200; stroke - width:4; stroke - linecap:round; stroke - miterlimit:10; }.st2{fill: #FEE576; stroke: #FFFFFF; stroke - width:2; stroke - miterlimit:10; }.st3{fill: #EDEDED; }.st4{fill: #F4F4F4; } </style><g id="Layer_1"><line class="st0" x1="26.6" y1="26.6" x2="73.4" y2="73.4"/> <line class="st0" x1= "73.4" y1= "26.6" x2= "26.6" y2= "73.4" /><line class="st1" x1= "14.5" y1= "50" x2= "85.5" y2= "50" /><line class="st1" x1= "50" y1= "85.5" x2= "50" y2= "14.5" /><circle class="st2" cx= "50" cy= "50" r= "23.4" /></g><g id="Layer_2"><path class="st3" d="M91.3 61.3c-0.4 0-0.8 0-1.2 0.1 0 0 0-0.1 0-0.1 0-4-3.3-7.3-7.3-7.3 -3.3 0-6 2.1-6.9 5.1 -1-0.5-2.1-0.8-3.3-0.8 -4 0-7.3 3.3-7.3 7.3 0 0 0 0 0 0 -0.2 0-0.5 0-0.7 0 -4 0-7.3 3.3-7.3 7.3 0 0.1 0 0.1 0 0.2 0 0.3 0 0.5 0.1 0.8h7.2 7.2 0.6 13.8 10.1 0v0c1.4-1.3 2.2-3.2 2.2-5.2C98.6 64.5 95.4 61.3 91.3 61.3z"/> <path class="st4" d= "M9.5 52.8c0.3 0 0.6 0 0.9 0.1 0 0 0-0.1 0-0.1 0-3.1 2.5-5.7 5.7-5.7 2.5 0 4.7 1.7 5.4 4 0.8-0.4 1.7-0.6 2.6-0.6 3.1 0 5.7 2.5 5.7 5.7 0 0 0 0 0 0 0.2 0 0.4 0 0.6 0 3.1 0 5.7 2.5 5.7 5.7 0 0 0 0.1 0 0.1 0 0.2 0 0.4 0 0.6h-5.6 -5.6 -0.5H13.4 5.5h0v0c-1.1-1-1.7-2.5-1.7-4.1C3.8 55.3 6.3 52.8 9.5 52.8z" /></g></svg>';
+        return Booking;
+    })(Structure.ShellComponent);
+    TheStudio.Booking = Booking;
+    var Footer = (function (_super) {
+        __extends(Footer, _super);
+        function Footer(site, data) {
+            _super.call(this, "footer", site, data);
+        }
+        Footer.prototype.layout = function () {
+            var markup = "<h1>the studio</h1>";
+            markup += "<p>physiotherapy & clinical pilates</p>";
+            markup += "<ul class='links'>";
+            markup += "<li>";
+            markup += "<h3>legal</h3>";
+            markup += "<ul>";
+            markup += "<li><a href='#'>terms of use</a></li>";
+            markup += "<li><a href='#'>privacy statement</a></li>";
+            markup += "</ul>";
+            markup += "</li>";
+            markup += "<li>";
+            markup += "<h3>links</h3>";
+            markup += "<ul>";
+            this.data.forEach(function (link) {
+                markup += "<li><a href='" + link.link + "' target='_blank'>" + link.text + "</a></li>";
+            });
+            markup += "</ul>";
+            markup += "</li>";
+            markup += "</ul>";
+            markup += "<p class='rights'>2015 The Studio, Physiotherapy & Clinical Pilates. All images © their respective owners. Perth, Western Australia</p>";
+            markup += "<ul class='social'>";
+            markup += "<li><a class='glyph facebook large' href='http://facebook.com/thestudiophysio' target='_blank'></a></li>";
+            markup += "<li><a class='glyph twitter large' href='http://twitter.com/thestudiophysio' target='_blank'></a></li>";
+            markup += "</ul>";
+            this._content = $(markup).css({ opacity: 0 }).appendTo(this.site);
+            _super.prototype.layout.call(this);
+        };
+        return Footer;
+    })(Structure.ShellComponent);
+    TheStudio.Footer = Footer;
+    var Shell = (function () {
+        function Shell(site) {
+            this.dataUrl = "scripts/data.json";
+            this.scrollPosition = 0;
+            this.overScrollThreshold = new Common.Event();
+            this.underScrollThreshold = new Common.Event();
+            this._isAboveScrollThreshold = false;
+            this._site = site;
+            this.init();
+        }
+        Object.defineProperty(Shell.prototype, "components", {
+            //get booking(): Booking {
+            //    return this._booking;
+            //}
+            get: function () {
+                return this._components;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shell.prototype, "scrollComponents", {
+            get: function () {
+                return this._scrollComponents;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(Shell.prototype, "visibleComponent", {
+            get: function () {
+                return this._visibleComponent;
+            },
+            set: function (value) {
+                if (this._visibleComponent === value) {
+                    return;
+                }
+                if (this._visibleComponent) {
+                    this._visibleComponent.isVisible = false;
+                }
+                this._visibleComponent = value;
+                this._visibleComponent.isVisible = true;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Shell.prototype.init = function () {
+            var _this = this;
+            this._components = [];
+            this._scrollComponents = {};
+            this._indexes = [];
+            this.getData().done(function () {
+                // Setup shell components.
+                _this.initComponents();
+                // Set the first component as visible.
+                _this.scrollHandler();
+                var that = _this;
+                _this.overScrollThreshold.on(function () {
+                    that._header.isHighlighted = true;
+                });
+                _this.underScrollThreshold.on(function () {
+                    that._header.isHighlighted = false;
+                });
+            });
+        };
+        Shell.prototype.getData = function () {
+            var _this = this;
+            var d = $.Deferred();
+            $.getJSON(this.dataUrl, function (retrievedData) {
+                // Setup basic data object.
+                _this.data = {
+                    backgroundImages: [],
+                    navigation: new Array(),
+                    blurb: {},
+                    openingTimes: new Array(),
+                    services: new Array(),
+                    people: new Array(),
+                    philosophy: {},
+                    links: new Array(),
+                };
+                // Parse background images.
+                retrievedData.backgroundImages.forEach(function (img) {
+                    _this.data.backgroundImages.push(img);
+                });
+                // Parse navigation items.
+                retrievedData.navigation.forEach(function (navigationItem) {
+                    _this.data.navigation.push({
+                        link: navigationItem.link,
+                        text: navigationItem.text
+                    });
+                });
+                // Parse blurb.
+                _this.data.blurb = {
+                    header: retrievedData.blurb.header,
+                    text: retrievedData.blurb.text
+                };
+                // Parse opening times.
+                for (var o = 0; o < retrievedData.openingTimes.length; o++) {
+                    var retrievedDay = retrievedData.openingTimes[o];
+                    var openDay = {
+                        day: retrievedDay.day,
+                        open: retrievedDay.open,
+                        close: retrievedDay.close,
+                        isOpen: retrievedDay.isOpen
+                    };
+                    _this.data.openingTimes.push(openDay);
+                }
+                // Parse philosophy.
+                _this.data.philosophy = {
+                    header: retrievedData.philosophy.header,
+                    text: retrievedData.philosophy.text
+                };
+                // Parse people.
+                for (var p = 0; p < retrievedData.people.length; p++) {
+                    var retrievedPerson = retrievedData.people[p];
+                    var person = {
+                        name: retrievedPerson.name,
+                        quote: retrievedPerson.quote,
+                        color: retrievedPerson.colour,
+                        isActive: retrievedPerson.isActive
+                    };
+                    _this.data.people.push(person);
+                }
+                // Parse services.
+                for (var i = 0; i < retrievedData.services.length; i++) {
+                    var retrievedService = retrievedData.services[i];
+                    var service = {
+                        id: retrievedService.id,
+                        name: retrievedService.name,
+                        description: retrievedService.description,
+                        shortDescription: retrievedService.shortdescription,
+                        consults: new Array(),
+                        products: new Array(),
+                        isConsult: false
+                    };
+                    if (retrievedService.consults) {
+                        service.isConsult = true;
+                        for (var c = 0; c < retrievedService.consults.length; c++) {
+                            var consult = retrievedService.consults[c];
+                            service.consults.push({
+                                name: consult.name,
+                                time: consult.time,
+                                price: consult.price
+                            });
+                        }
+                    } else {
+                        for (var p = 0; p < retrievedService.products.length; p++) {
+                            service.products.push(retrievedService.products[p])
+                        }
+                    }
+                    // Add to the services object.
+                    _this.data.services.push(service);
+                }
+                // Parse links.
+                retrievedData.links.forEach(function (linkData) {
+                    _this.data.links.push({
+                        text: linkData.text,
+                        link: linkData.link
+                    });
+                });
+                d.resolve();
+            });
+            return d;
+        };
+        Shell.prototype.initComponents = function () {
+            var _this = this;
+            var headerSite = $("<section id='header'></section>").appendTo(this._site);
+            this._header = new Header(headerSite, this.data.navigation);
+            this.components.push(this._header);
+            var brandSite = $("<section id='brand'></section>").appendTo(this._site);
+            this._brand = new Brand(brandSite, this.data.blurb);
+            this.addScrollComponent(this._brand);
+            var whatSite = $("<section id='what'></section>").appendTo(this._site);
+            this._what = new What(whatSite, this.data.services);
+            this.addScrollComponent(this._what);
+            var mapSite = $("<section id='map'></section>").appendTo(this._site);
+            this._map = new Map(mapSite);
+            this.addScrollComponent(this._map);
+            var contactSite = $("<section id='contact'></section>").appendTo(this._site);
+            this._contact = new Contact(contactSite, this.data.openingTimes);
+            this.addScrollComponent(this._contact);
+            var philosophySite = $("<section id='philosophy'></section>").appendTo(this._site);
+            this._philosophy = new Philosophy(philosophySite, this.data.philosophy);
+            this.addScrollComponent(this._philosophy);
+            var servicesSite = $("<section id='services'></section>").appendTo(this._site);
+            this._services = new Services(servicesSite, this.data.services);
+            this.addScrollComponent(this._services);
+            var whoSite = $("<section id='who'></section>").appendTo(this._site);
+            this._who = new Who(whoSite, this.data.people);
+            this.addScrollComponent(this._who);
+            var footerSite = $("<section id='footer'></section>").appendTo(this._site);
+            this._footer = new Footer(footerSite, this.data.links);
+            this.addScrollComponent(this._footer);
+            //var bookingSite = $("<section id='booking'></section>").appendTo(this._site);
+            //this._booking = new Booking(bookingSite, this.data);
+            //this.components.push(this._booking);
+            // Hookup window scrolling event so that various elements can scroll in if we want.
+            $(window).on("scroll", function () {
+                _this.scrollHandler();
+            });
+            // Set up each of the modules.
+            this.components.forEach(function (m) {
+                m.init();
+                m.layout();
+            });
+            // Render email links.
+            $(".email-link").each(function () {
+                var e = $(this);
+                var name = e.attr("data-email-name");
+                var text = e.attr("data-email-text");
+                // Setup link and text if required.
+                var link = name + "@thestudiophysio.com";
+                if (!text) {
+                    text = link;
+                }
+                e.append("<a href='mailto:" + link + "'>" + text + "</a>");
+            });
+        };
+        Shell.prototype.addScrollComponent = function (component) {
+            this.components.push(component);
+            this.scrollComponents[component.id] = component;
+            this._indexes.push(component.id);
+        };
+        Shell.prototype.scrollHandler = function () {
+            var _this = this;
+            var viewTop = $(window).scrollTop();
+            var viewBottom = viewTop + $(window).height();
+            if (!this._isAboveScrollThreshold && (viewTop > Shell.topScrollThreshold)) {
+                this._isAboveScrollThreshold = true;
+                this.overScrollThreshold.trigger();
+            }
+            else if (this._isAboveScrollThreshold && (viewTop < Shell.topScrollThreshold)) {
+                this._isAboveScrollThreshold = false;
+                this.underScrollThreshold.trigger();
+            }
+            this._indexes.forEach(function (i) {
+                var c = _this.scrollComponents[i];
+                // Only the top of the component is visible.
+                if (c.top >= viewTop && c.top <= viewBottom) {
+                    c.isVisible = true;
+                }
+                else if (c.top <= viewTop && c.bottom >= viewBottom) {
+                    // The component is partially visible in the view.
+                    c.isVisible = true;
+                }
+                else if (c.top >= viewTop && c.bottom <= viewBottom) {
+                    // The component is completely visible in the view.
+                    c.isVisible = true;
+                }
+                else if (c.bottom >= viewTop && c.bottom <= viewBottom) {
+                    c.isVisible = true;
+                }
+                else {
+                    c.isVisible = false;
+                }
+            });
+        };
+        Shell.topScrollThreshold = 450;
+        return Shell;
+    })();
+    TheStudio.Shell = Shell;
+    $(function () {
+        TheStudio.shell = new Shell($("body"));
+    });
+})(TheStudio || (TheStudio = {}));
+//# sourceMappingURL=thestudio.js.map

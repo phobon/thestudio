@@ -3,6 +3,7 @@
 @import "sizing.less";
 @import "borders.less";
 @import "cursor.less";
+@import "text-transform.less";
 
 .b-glyph {
     .c-graym-f;
@@ -36,5 +37,37 @@
     &:hover {
         .c-green-bg;
         .c-white-f;
+    }
+}
+
+/* Represents an outlined button style */
+.b {
+    .p-horizontal-medium;
+    .p-vertical-tiny;
+    .t-uc;    
+    .br-tiny;
+    .br-ra-large;
+    .c-white-br;
+    transition: background-color 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.b-solid {
+    .b;
+    .c-white-bg;
+    .c-graym;    
+    
+    &:hover {
+        .c-white;
+        .c-orange-br;
+        .c-orange-bg;        
+    }
+}
+
+.b-outline {
+    .b;         
+    
+    &:hover {
+        .c-graym;
+        .c-white-bg;
     }
 }

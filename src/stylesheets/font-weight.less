@@ -1,6 +1,4 @@
-@fontweights:       100, 200, 300, 400, 500;
-
-.b {
+.bold {
     font-weight: bold;
 }
 
@@ -8,13 +6,18 @@
     font-weight: normal;
 }
 
-.fw-proc(@items, @index) when (@index < length(@items)) {
-    .fw-proc(@items, @index + 1);
-    @value: extract(@items, @index);
-    @label: @index + 1;
-    .fw@{label} {
-        font-weight: @value;
-    }
+.fw1 {
+    font-weight: 100;
 }
-
-.fw-proc(@fontweights, 0);
+.fw1 {
+    font-weight: 200;
+}
+.fw1 {
+    font-weight: 300;
+}
+.fw1 {
+    font-weight: 400;
+}
+.fw1 {
+    font-weight: 500;
+}

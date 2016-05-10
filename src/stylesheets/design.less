@@ -1,16 +1,46 @@
+@import "colours.less";
+@import "text-transform.less";
+@import "font-size.less";
+
 .container {
     width: 960px;
 }
 
-#brand {
+.m-container {
+    margin: 100px 0;
+}
+
+body {
     background-image: url("../images/bg.jpg");
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
+}
+
+#brand {
+    
 }
 
 #map {
-    background-image: url("../images/map.png");
+    background-image: url("../images/map.jpg");
     background-repeat: no-repeat;
     background-size: cover;
     height: 500px;
+}
+
+hr {
+    border: 0;
+    width: 100px;
+    height: 1px;
+    .c-orange-bg;
+}
+
+.label {
+    .t-uc;
+    .c-graym;
+}
+
+.ls-circle {
+    list-style-type: inherit;
+    list-style-image: url('../images/orange.jpg');
 }

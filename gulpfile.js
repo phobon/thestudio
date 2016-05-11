@@ -60,8 +60,8 @@ gulp.task('release', ['clean', 'tsc', 'less'], function() {
     // Set up our bundled stream with the output that we want to achieve.
     bundledStream
         .pipe(source('./public/scripts/thestudio.min.js'))
-        .pipe(buffer())
-        .pipe(uglify())
+        .pipe(buffer())   
+        //.pipe(uglify())
         .pipe(gulp.dest('./'));        
     
     // Match files based on a pattern and pipe into our bundled stream.

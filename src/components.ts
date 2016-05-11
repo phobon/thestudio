@@ -1,220 +1,108 @@
 import { IShellComponent, ShellComponent } from "./framework";
 
-export interface INavigation extends IShellComponent {
+export interface IHeader extends IShellComponent {
     hilight(): JQueryPromise<any>;
     lolight(): JQueryPromise<any>;    
 }
 
-export class Navigation extends ShellComponent implements INavigation {
-    constructor() {
-        super("navigation");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0 f w-100 fixed'/>`).appendTo(container);
-        
-        var title = $("<ul/>").appendTo(this.site);
-        this.site.append("<div class='f'/>");
-        var menu = $("<ul/>").appendTo(this.site);
+export class Header extends ShellComponent implements IHeader {
+    constructor(site: JQuery) {
+        super("header", site, false);
     }
     
     hilight(): JQueryPromise<any> {        
         var d = $.Deferred<any>();
+        this.site.addClass("c-orange-bg");        
         d.resolve();
         return d;        
     }
     
     lolight(): JQueryPromise<any> {
         var d = $.Deferred<any>();
+        this.site.removeClass("c-orange-bg");
         d.resolve();
         return d;        
     }
 }
 
 export class Brand extends ShellComponent {
-    constructor() {
-        super("brand");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+    constructor(site: JQuery) {
+        super("brand", site);
     }
 }
 
 export class What extends ShellComponent {
-    constructor() {
-        super("what");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+    constructor(site: JQuery) {
+        super("what", site);
     }
 }
 
 export class Map extends ShellComponent {
-    constructor() {
-        super("map");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+    constructor(site: JQuery) {
+        super("map", site);
     }
 }
 
-export class Contact extends ShellComponent {
-    constructor() {
-        super("contact");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+export class Where extends ShellComponent {
+    constructor(site: JQuery) {
+        super("where", site);
     }
 }
 
 export class Philosophy extends ShellComponent {
-    constructor() {
-        super("philosophy");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+    constructor(site: JQuery) {
+        super("philosophy", site);
     }
 }
 
-export class Services extends ShellComponent {
-    constructor() {
-        super("services");
-    }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
-    }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+export class Physiotherapy extends ShellComponent {
+    constructor(site: JQuery) {
+        super("physiotherapy", site);
     }
 }
 
-export class Who extends ShellComponent {
-    constructor() {
-        super("who");
+export class Shop extends ShellComponent {
+    constructor(site: JQuery) {
+        super("shop", site);
     }
-    
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
+}
+
+export class Pilates extends ShellComponent {
+    constructor(site: JQuery) {
+        super("pilates", site);
     }
-    
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
-    }
-    
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+}
+
+export class Crew extends ShellComponent {
+    constructor(site: JQuery) {
+        super("crew", site);
     }
 }
 
 export class Footer extends ShellComponent {
-    constructor() {
-        super("footer");
+    constructor(site: JQuery) {
+        super("footer", site);
+        
+        this.scrollBuffer = 100;
+    }
+}
+
+export class Scroller extends ShellComponent {
+    constructor(site: JQuery) {
+        super("scroller", site, false);
     }
     
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
+    init() {
+        super.init();
+        this.site.on("click", () => { this.onClick(); })
     }
     
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;     
+    destroy() {
+        this.site.off("click");
+        super.destroy();
     }
     
-    layout(container: JQuery) {
-        this.site = $(`<section id='${this.id}' class='o-0'/>`).appendTo(container);
+    private onClick() {
+        $("#brand").velocity("scroll", { duration: 1000, easing: "easeOutExpo" });
     }
 }

@@ -8,11 +8,10 @@ export interface IShell {
     hidden: Event<any>;
     
     init();
-    layout();
     destroy();
     
-    hide(): JQueryPromise<any>;
-    show(): JQueryPromise<any>;
+    hide();
+    show();
     
     add(component: IShellComponent);
     remove(component: IShellComponent);
@@ -20,15 +19,20 @@ export interface IShell {
 
 export interface IShellComponent {
     id: string;
-    site: JQuery;
+    site: JQuery;    
     
-    shown: Event<any>;
+    top: number;
+    scrollBuffer: number; 
+    affectsLayout: boolean;
+    
+    isVisible: boolean;
+    
     hidden: Event<any>;
+    shown: Event<any>;
     
+    init();    
     show(): JQueryPromise<any>;
     hide(): JQueryPromise<any>;
-    
-    layout(container: JQuery);
     destroy();
 }
 
@@ -36,14 +40,22 @@ export abstract class ShellComponent implements IShellComponent {
     private _id: string;    
     private _site: JQuery;
     
-    private _shown: Event<any>;
-    private _hidden: Event<any>;
+    private _top: number;
+    private _scrollBuffer: number = 500;
+    private _affectsLayout: boolean = true;
     
-    constructor(id: string) {
-        this._id = id;
-                
-        this._shown = new Event<any>();
+    private _isVisible: boolean = false;
+    
+    private _hidden: Event<any>;
+    private _shown: Event<any>;
+    
+    constructor(id: string, site: JQuery, affectsLayout: boolean = true) {
+        this._id = id;                
+        this._site = site;
+        this._affectsLayout = affectsLayout;
+        
         this._hidden = new Event<any>();
+        this._shown = new Event<any>();
     }
     
     get id(): string {
@@ -54,23 +66,89 @@ export abstract class ShellComponent implements IShellComponent {
         return this._site;
     }
     
-    get shown(): Event<any> {
-        return this._shown;
+    get top(): number {
+        return this._top;
+    }
+    
+    get scrollBuffer(): number {
+        return this._scrollBuffer;
+    }
+    
+    set scrollBuffer(value: number) {
+        this._scrollBuffer = value;
+    }
+    
+    get affectsLayout(): boolean {
+        return this._affectsLayout;
+    }
+    
+    get isVisible(): boolean {
+        return this._isVisible;
     }
     
     get hidden(): Event<any> {
         return this._hidden;
     }
     
-    abstract show(): JQueryPromise<any>;
-    abstract hide(): JQueryPromise<any>;
+    get shown(): Event<any> {
+        return this._shown;
+    }
     
-    abstract layout(container: JQuery);
+    init() {
+        this._top = this.site.position().top;
+        this.site.velocity({ opacity: 0 }, { duration: 0 });        
+    }
+    
+    show(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        
+        if (this.isVisible) {
+            return d.resolve();
+        }
+        
+        this._isVisible = true;
+        
+        this.site.velocity("stop");
+        this.site.velocity(
+            { opacity: 1 }, 
+            { 
+                duration: 250, 
+                easing: "easeOutExpo", 
+                complete: () => {
+                    this.shown.trigger();
+                    d.resolve(); 
+                } 
+            });
+        return d;
+    }
+    
+    hide(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+                
+        if (!this.isVisible) {
+            return d.resolve();
+        }
+        
+        this._isVisible = false;
+        
+        this.site.velocity("stop");
+        this.site.velocity(
+            { opacity: 0 }, 
+            { 
+                duration: 250, 
+                easing: "easeOutExpo", 
+                complete: () => { 
+                    this.hidden.trigger();                    
+                    d.resolve(); 
+                } 
+            });
+        return d;
+    }
     
     destroy() {
         this.hide().done(() => {
             this.site.remove();
-        });
+        });        
     }
 }
 
@@ -79,6 +157,10 @@ export abstract class Shell implements IShell {
     private _components: IShellComponent[] = [];
     private _componentsById: { [index: string]: IShellComponent } = {};
     
+    private _currentComponent: IShellComponent;
+    private _previousComponent: IShellComponent;
+    private _nextComponent: IShellComponent;
+    
     private _shown: Event<any>;
     private _hidden: Event<any>;
     
@@ -86,13 +168,6 @@ export abstract class Shell implements IShell {
         this._site = site;
         this._shown = new Event<any>();
         this._hidden = new Event<any>();
-        
-        // Set up some event handlers.        
-        $(window).on("scroll", e => {
-            this.onScroll(e);
-        });
-        
-        // TODO: Responsive?
     }
     
     get site(): JQuery {
@@ -103,6 +178,28 @@ export abstract class Shell implements IShell {
         return this._components;
     }
     
+    get currentComponent(): IShellComponent {
+        return this._currentComponent;
+    }
+    
+    set currentComponent(value: IShellComponent) {
+        if (value === this._currentComponent || !value.affectsLayout) {
+            return;
+        }
+        
+        if (this._currentComponent) {
+            this._previousComponent = this._currentComponent;
+        }
+        
+        this._currentComponent = value;
+        this._currentComponent.show(); 
+        
+        var index = this.components.indexOf(this._currentComponent);
+        var next = this.components[index + 1];
+                
+        this._nextComponent = next.affectsLayout ? next : null;
+    }
+    
     get shown(): Event<any> {
         return this._shown;
     }
@@ -111,40 +208,40 @@ export abstract class Shell implements IShell {
         return this._hidden;
     }
     
-    abstract init();
-    
-    layout() {
-        this._components.forEach(c => {
-            c.layout(this.site);
+    init() {
+        this.initComponents();
+        this.components.forEach(c => {
+            c.init();
         });
+        
+        // Set up some event handlers.
+        window.onscroll = e => {
+            var w = $(window);
+            var top = w.scrollTop();
+            var bottom = top + w.height();
+            
+            this.onScroll(top, bottom);
+        };
+        
+        // TODO: Responsive?
     }
     
     destroy() {
-        $(window).off("scroll");
-        
-        this.hide().done(() => {
-            this._components.forEach(c => {
-                this.remove(c);
-            });
-        });        
+        this._components.forEach(c => {
+            this.remove(c);
+        });    
     }
     
-    show(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        
-        // TODO: Determine where on the page the user is and get the correct components.
-        // TODO: For now, just show the navigation and brand components.
-        this.component("navigation").show().done(() => {
-            this.component("brand").show().done(() => { d.resolve(); });
-        })
-        
-        return d;
-    }
+    show() {
+        this.components.forEach(c => {
+            c.show();
+        });
+    }    
     
-    hide(): JQueryPromise<any> {
-        var d = $.Deferred<any>();
-        d.resolve();
-        return d;
+    hide() {
+        this.components.forEach(c => {
+            c.hide();
+        });
     }
     
     component(id: string): IShellComponent {
@@ -163,7 +260,12 @@ export abstract class Shell implements IShell {
         component.destroy();
     }
     
-    private onScroll(handler: any) {
-        console.log("scroll");
+    protected abstract initComponents();
+    
+    protected onScroll(top: number, bottom: number) {        
+        // Check if we're above the threshold to show the next component.
+        if (bottom > this._nextComponent.top + this._nextComponent.scrollBuffer) {
+            this.currentComponent = this._nextComponent;
+        }
     }
 }

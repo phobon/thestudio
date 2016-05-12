@@ -6,21 +6,90 @@ export interface IHeader extends IShellComponent {
 }
 
 export class Header extends ShellComponent implements IHeader {
+    private _isHilighted: boolean;
+    private _height: number;
+    private _glyph: JQuery;
+    private _nav: JQuery;
+    
     constructor(site: JQuery) {
         super("header", site, false);
     }
     
+    init() {
+        super.init();
+        
+        // Cache the height of the site.
+        this._height = this.site.outerHeight();
+        
+        // Cache some of the sites here so we can manipulate them individually.
+        this._glyph = this.site.find("> svg");
+        this._nav = this.site.find("nav");
+    }
+    
     hilight(): JQueryPromise<any> {        
         var d = $.Deferred<any>();
-        this.site.addClass("c-orange-bg");        
-        d.resolve();
+        if (this._isHilighted) {
+            return d.resolve();
+        }
+        
+        this._isHilighted = true;
+        var s = [
+            { 
+                e: this.site, 
+                p: { translateY: -this._height }, 
+                o: { duration: 250, easing: "easeOutExpo", complete: () => {
+                        this.site.addClass("c-white-bg");
+                        this._glyph.addClass("c-graym-f");
+                        this._glyph.css({ width: 50, height: 50 });                    
+                        this._nav.find("> a").addClass("c-graym");
+                    }
+                }
+            },
+            { 
+                e: this.site, 
+                p: { translateY: 0 }, 
+                o: { duration: 250, delay: 250, easing: "easeOutExpo", complete: () => {
+                        d.resolve();
+                    }
+                } 
+            }
+        ]
+        
+        $.Velocity.RunSequence(s);        
         return d;        
     }
     
     lolight(): JQueryPromise<any> {
         var d = $.Deferred<any>();
-        this.site.removeClass("c-orange-bg");
-        d.resolve();
+        if (!this._isHilighted) {
+            return d.resolve();
+        }
+        
+        this._isHilighted = false;
+        
+        var s = [
+            { 
+                e: this.site, 
+                p: { translateY: -this._height }, 
+                o: { duration: 250, easing: "easeOutExpo", complete: () => {
+                        this.site.removeClass("c-white-bg");
+                        this._glyph.removeClass("c-graym-f");
+                        this._glyph.css({ width: 80, height: 80 });                    
+                        this._nav.find("> a").removeClass("c-graym");
+                    }
+                }
+            },
+            { 
+                e: this.site, 
+                p: { translateY: 0 }, 
+                o: { duration: 250, delay: 250, easing: "easeOutExpo", complete: () => {
+                        d.resolve();
+                    }
+                } 
+            }
+        ]
+        
+        $.Velocity.RunSequence(s);
         return d;        
     }
 }

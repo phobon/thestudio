@@ -8,8 +8,11 @@ export interface IHeader extends IShellComponent {
 export class Header extends ShellComponent implements IHeader {
     private _isHilighted: boolean;
     private _height: number;
+    
     private _glyph: JQuery;
     private _nav: JQuery;
+    // private _glyphTranslate: number;
+    // private _navTranslate: number;
     
     constructor(site: JQuery) {
         super("header", site, false);
@@ -24,8 +27,39 @@ export class Header extends ShellComponent implements IHeader {
         // Cache some of the sites here so we can manipulate them individually.
         this._glyph = this.site.find("> svg");
         this._nav = this.site.find("nav");
+        
+        // Cache some dimensions so we can easily transition things.
+        // this._glyphTranslate = -(this._glyph.position().left + this._glyph.outerWidth());
+        // this._navTranslate = this._nav.outerWidth();
     }
     
+    show(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        if (this.isVisible) {
+            return d.resolve();
+        }
+        
+        this.isVisible = true;        
+        var s = [
+            { 
+                e: this._glyph, 
+                p: { translateY: [0, -this._height] }, 
+                o: { duration: 450, easing: "easeOutExpo" }
+            },
+            { 
+                e: this._nav, 
+                p: { translateY: [0, -this._height] }, 
+                o: { duration: 450, easing: "easeOutExpo", sequenceQueue: false, delay: 100, complete: () => {
+                        d.resolve();
+                    } 
+                }
+            },
+        ]   
+        
+        $.Velocity.RunSequence(s);
+        return d;     
+    }
+           
     hilight(): JQueryPromise<any> {        
         var d = $.Deferred<any>();
         if (this._isHilighted) {
@@ -95,8 +129,54 @@ export class Header extends ShellComponent implements IHeader {
 }
 
 export class Brand extends ShellComponent {
+    private _headline: JQuery;
+    private _tagline: JQuery;
+    private _booking: JQuery;
+    
     constructor(site: JQuery) {
         super("brand", site);
+    }
+    
+    init() {
+        this._headline = this.site.find("h1");
+        this._tagline = this.site.find("p");
+        this._booking = this.site.find(".b-solid");
+        
+        this._headline.velocity({ opacity: 0 }, { duration : 0 });
+        this._tagline.velocity({ opacity: 0 }, { duration : 0 });
+        this._booking.velocity({ opacity: 0 }, { duration : 0 });
+    }
+    
+    show(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        if (this.isVisible) {
+            return d.resolve();
+        }
+        
+        this.isVisible = true;        
+        var s = [
+            { 
+                e: this._headline, 
+                p: { translateY: [0, -32], opacity: 1 }, 
+                o: { duration: 500, easing: "easeOutExpo" }
+            },
+            { 
+                e: this._tagline, 
+                p: { translateY: [0, -32], opacity: 1 }, 
+                o: { duration: 500, easing: "easeOutExpo", sequenceQueue: false, delay: 100 }
+            },
+            { 
+                e: this._booking, 
+                p: { translateY: [0, -32], opacity: 1 }, 
+                o: { duration: 500, easing: "easeOutExpo", sequenceQueue: false, delay: 100, complete: () => {
+                        d.resolve();
+                    } 
+                }
+            },
+        ]   
+        
+        $.Velocity.RunSequence(s);
+        return d;     
     }
 }
 

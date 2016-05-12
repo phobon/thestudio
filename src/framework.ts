@@ -86,6 +86,10 @@ export abstract class ShellComponent implements IShellComponent {
         return this._isVisible;
     }
     
+    set isVisible(value: boolean) {
+        this._isVisible = value;
+    }
+    
     get hidden(): Event<any> {
         return this._hidden;
     }
@@ -95,8 +99,7 @@ export abstract class ShellComponent implements IShellComponent {
     }
     
     init() {
-        this._top = this.site.position().top;
-        this.site.velocity({ opacity: 0 }, { duration: 0 });        
+        this._top = this.site.position().top;     
     }
     
     show(): JQueryPromise<any> {

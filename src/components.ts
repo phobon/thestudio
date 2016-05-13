@@ -280,8 +280,13 @@ export class Scroller extends ShellComponent {
         
         this.isVisible = false;
         var s = [
-            { e: this.site, p: { opacity: 0 }, o: { duration: 300 } },
-            { e: this.site, p: { translateY: [60, 0] }, o: { duration: 300, easing: "easeOutExpo", sequenceQueue: false, complete: () => { d.resolve(); } } }
+            { e: this.site, p: { opacity: 0.01 }, o: { duration: 300 } },
+            { e: this.site, p: { translateY: [60, 0] }, o: { duration: 300, easing: "easeOutExpo", sequenceQueue: false, complete: () => { 
+                        d.resolve(); 
+                        this.site.css({ opacity: 0 });
+                    } 
+                }
+            }
         ];
         
         $.Velocity.RunSequence(s);

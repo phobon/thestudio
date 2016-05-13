@@ -132,6 +132,7 @@ export class Brand extends ShellComponent {
     private _headline: JQuery;
     private _tagline: JQuery;
     private _booking: JQuery;
+    private _downarrow: JQuery;
     
     constructor(site: JQuery) {
         super("brand", site);
@@ -141,10 +142,12 @@ export class Brand extends ShellComponent {
         this._headline = this.site.find("h1");
         this._tagline = this.site.find("p");
         this._booking = this.site.find(".b-solid");
+        this._downarrow = this.site.find(".downarrow");
         
         this._headline.velocity({ opacity: 0 }, { duration : 0 });
         this._tagline.velocity({ opacity: 0 }, { duration : 0 });
         this._booking.velocity({ opacity: 0 }, { duration : 0 });
+        this._downarrow.velocity({ opacity: 0 }, { duration : 0 });
     }
     
     show(): JQueryPromise<any> {
@@ -157,26 +160,37 @@ export class Brand extends ShellComponent {
         var s = [
             { 
                 e: this._headline, 
-                p: { translateY: [0, -32], opacity: 1 }, 
-                o: { duration: 500, easing: "easeOutExpo" }
-            },
+                p: { opacity: 1, translateY: [0, -32] }, 
+                o: { duration: 600, easing: "easeOutExpo" }
+            },      
             { 
                 e: this._tagline, 
-                p: { translateY: [0, -32], opacity: 1 }, 
-                o: { duration: 500, easing: "easeOutExpo", sequenceQueue: false, delay: 100 }
-            },
+                p: { opacity: 1, translateY: [0, -32] }, 
+                o: { duration: 600, easing: "easeOutExpo", delay: 100, sequenceQueue: false }
+            },         
             { 
                 e: this._booking, 
-                p: { translateY: [0, -32], opacity: 1 }, 
-                o: { duration: 500, easing: "easeOutExpo", sequenceQueue: false, delay: 100, complete: () => {
-                        d.resolve();
+                p: { opacity: 1, translateY: [0, -32] }, 
+                o: { duration: 600, easing: "easeOutExpo", delay: 200, sequenceQueue: false }
+            },         
+            { 
+                e: this._downarrow, 
+                p: { opacity: 1, translateY: [0, -16] }, 
+                o: { duration: 600, easing: "easeOutExpo", delay: 500, sequenceQueue: false, complete: () => {                                              
+                        this._downarrow.velocity("stop").velocity({ translateY: -15 }, { duration: 2000, easing: "easeInOut", loop: true });
+                        d.resolve();  
                     } 
                 }
-            },
+            }
         ]   
         
         $.Velocity.RunSequence(s);
         return d;     
+    }
+    
+    destroy() {
+        super.destroy();
+        this._downarrow.velocity("stop");
     }
 }
 
@@ -244,6 +258,36 @@ export class Scroller extends ShellComponent {
     init() {
         super.init();
         this.site.on("click", () => { this.onClick(); })
+    }
+    
+    show(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        if (this.isVisible) {
+            return d.resolve();
+        }
+        
+        this.isVisible = true;
+        this.site.velocity({ opacity: 1, translateY: [0, 60] }, { duration: 300, easing: "easeOutExpo", complete: () => { d.resolve(); }});
+        
+        return d;
+    }
+    
+    hide(): JQueryPromise<any> {        
+        var d = $.Deferred<any>();
+        if (!this.isVisible) {
+            return d.resolve();
+        }
+        
+        this.isVisible = false;
+        var s = [
+            { e: this.site, p: { opacity: 0 }, o: { duration: 300 } },
+            { e: this.site, p: { translateY: [60, 0] }, o: { duration: 300, easing: "easeOutExpo", sequenceQueue: false, complete: () => { d.resolve(); } } }
+        ];
+        
+        $.Velocity.RunSequence(s);
+        // this.site.velocity({ opacity: 0, translateY: [60, 0] }, { duration: 300, easing: "easeOutExpo", complete: () => { d.resolve(); }})
+        
+        return d;
     }
     
     destroy() {

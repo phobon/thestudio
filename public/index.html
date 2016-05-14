@@ -24,7 +24,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.ui.min.js"></script>
     </head>
     <body class='c-grayh'>
-        <section id='header' class='f f-ai-center f-j-center p-vertical-small p-horizontal-huge fixed w-100' style='top:0'>
+        <section id='header' class='f f-ai-center f-j-center p-vertical-small p-horizontal-huge fixed w-100 z5' style='top:0'>
             <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" class='c-white-f'>
                 <title>thestudio</title>
                 <path d="M40,0A40,40,0,1,0,80,40,40,40,0,0,0,40,0ZM68.48,54.67a32,32,0,0,1-57,0l-0.13-.26a32,32,0,1,1,57.23,0Z" class="o-50"/>
@@ -37,9 +37,11 @@
             </svg>
             <div class='f'></div>
             <nav class='f-none f-ai-center f-d-row'>
-                <a href='#where' class='m-r-large'>where</a>
-                <a href='#physiotherapy' class='m-r-large'>physio & pilates</a>
-                <a href='#shop' class='m-r-large'>shop</a>
+                <div data-target='#map' class='link m-r-large'>where</div>
+                <div data-target='#physiotherapy' class='link m-r-large'>physio</div>
+                <div data-target='#clinicalpilates' class='link m-r-large'>pilates</div>
+                <div data-target='#shop' class='link m-r-large'>shop</div>
+                <div data-target='#crew' class='link m-r-large'>crew</div>
                 <a href='#' class='b-outline'>make a booking</a>
             <nav>
         </section>
@@ -47,7 +49,7 @@
         <section id='brand' class='h-100 f f-j-center c-white'>            
             <div class='container f-none f-ai-center h-100 f-j-center f-d-column'>
                 <div class='f-grow-2'></div>
-                <div class='f-none f-d-column'>
+                <div class='f-none f-d-column ta-center f-j-center f-ai-center'>
                     <h1>feel better again.</h1>
                     <p>We can help you feel better again!</br>Drop by and see what we can do for you!</p>
                     <div class='f-none f-j-start m-t-medium'>
@@ -66,7 +68,7 @@
             <div class='container ta-center m-container'>
                 <h2 class='c-graym'>what we do</h2>
                 <hr/>
-                <ul class='l-row f-ai-start m-t-huge'>
+                <ul class='items l-row f-ai-start m-t-huge'>
                     <li class='col3 f-none f-ai-center f-j-center f-d-column m-r-large'>
                         <img src='images/service_placeholder.png' style='width:160px;height:160px' class='m-b-medium'/>
                         <h3>physiotherapy</h3>
@@ -86,11 +88,13 @@
             </div>                     
         </section>
         
-        <section id='map' class='w-100'></section>
+        <section id='map' class='w-100'>
+            <div class='h-100 w-100 f c-white-bg'></div>
+        </section>
         
-        <section id='where'class='f f-j-center c-grayll-bg'>
+        <section id='where' class='f f-j-center c-grayll-bg'>
             <div class='container m-vertical-huge f-none f-d-row'>
-                <ul class='col2 l-column'>
+                <ul class='details col2 l-column'>
                     <li>
                         <div class='label'>address</div>
                         <div class='f4'>1/3 sheen street, subiaco</div>
@@ -110,7 +114,7 @@
                     </li>
                 </ul>
                 <div class='col3'></div>
-                <ul class='col2 l-column'>
+                <ul class='opening col2 l-column'>
                     <li class='l-row'>
                         <span class='label'>monday</span><span class='f'></span><span>8am - 7pm</span>
                     </li>
@@ -140,7 +144,7 @@
             <div class='container m-container'>
                 <h2 class='c-graym ta-center'>be free to move again</h2>
                 <hr/>
-                <ul class='l-row f-ai-start m-t-huge'>
+                <ul class='items l-row f-ai-start m-t-huge'>
                     <li class='col3 m-r-large'>
                         <p class='ta-justify'>
                             The philosophy here at The Studio, Physiotherapy & Clinical Pilates, is to treat every client with a personal, professional and holistic approach. We strive not only to treat the symptoms, but to correct causative factors and prevent further problems.<br/><br/>This is achieved through our longer treatment times to fully address all components of the presenting injury, and our individualised Clinical Pilates instruction to correct postures and movement patterns.
@@ -155,104 +159,116 @@
             </div>
         </section>
         
-        <section id='physiotherapy' class='f f-ai-center f-j-center c-grayll-bg'>
-            <div class='container m-container ta-center'>
-                <h2 class='c-graym'>physiotherapy</h2>
-                <hr/>
-                <p class='m-t-huge'>Physiotherapy consultation involves thorough assessment and treatment of a range of conditions</p>
-                <ul class='l-row f-ai-top m-t-huge'>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-orange-bg c-white br-ra-max'>$89</li>
-                            <li class='m-t-small label'>initial</li>
-                            <li>45 mins<li>
-                        </ul>                    
-                    </li>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-orange-bg c-white br-ra-max'>$78</li>
-                            <li class='m-t-small label'>standard</li>
-                            <li>30 mins<li>
-                        </ul>    
-                    </li>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-orange-bg c-white br-ra-max'>$87</li>
-                            <li class='m-t-small label'>extended</li>
-                            <li>45 mins<li>
-                        </ul>    
-                    </li>
-                </ul>
+        <section id='physiotherapy' class='f f-ai-center c-grayll-bg'>
+            <div class='f h-100'></div>
+            <div class='container f ta-center f-j-end'>
+                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+                    <h2 class='c-graym'>physiotherapy</h2>
+                    <hr/>
+                    <p class='m-t-huge'>Physiotherapy consultation involves thorough assessment and treatment of a range of conditions</p>
+                    <ul class='items l-row f-ai-top m-t-huge'>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-orange-bg c-white br-ra-max'>$89</li>
+                                <li class='m-t-small label'>initial</li>
+                                <li>45 mins<li>
+                            </ul>                    
+                        </li>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-orange-bg c-white br-ra-max'>$78</li>
+                                <li class='m-t-small label'>standard</li>
+                                <li>30 mins<li>
+                            </ul>    
+                        </li>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-orange-bg c-white br-ra-max'>$87</li>
+                                <li class='m-t-small label'>extended</li>
+                                <li>45 mins<li>
+                            </ul>    
+                        </li>
+                    </ul>
+                </div>
             </div>
+            <div class='f h-100 c-white-bg'></div>
         </section>
         
-        <section id='clinicalpilates' class='f f-ai-center f-j-center c-white-bg'>
-            <div class='container m-container ta-center'>
-                <h2 class='c-graym'>clinical pilates</h2>
-                <hr/>
-                <p class='m-t-huge'>Clinical Pilates is used in the treatment and rehabilitation of injuries and chronic conditions, as pre-and-post natal management, to prevent pain and injury, to improve posture and quality of movement, and enhance sporting performance.</p>
-                <ul class='l-row f-ai-top m-t-huge'>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-green-bg c-white br-ra-max'>$110</li>
-                            <li class='m-t-small label'>initial</li>
-                            <li>60 mins<li>
-                        </ul>                    
-                    </li>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-green-bg c-white br-ra-max'>$78</li>
-                            <li class='m-t-small label'>1-on-1</li>
-                            <li>45 mins<li>
-                        </ul>    
-                    </li>
-                    <li class='col4'>
-                        <ul class='l-col f-j-center'>
-                            <li class='f4 p-small c-green-bg c-white br-ra-max'>$48 pp</li>
-                            <li class='m-t-small label'>2-on-1</li>
-                            <li>45 mins<li>
-                        </ul>    
-                    </li>
-                </ul>
+        <section id='clinicalpilates' class='f f-ai-center f-j-center'>
+            <div class='f h-100 c-white-bg'></div>
+            <div class='container f-none ta-center f-j-start'>
+                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+                    <h2 class='c-graym'>clinical pilates</h2>
+                    <hr/>
+                    <p class='m-t-huge'>Clinical Pilates is used in the treatment and rehabilitation of injuries and chronic conditions, as pre-and-post natal management, to prevent pain and injury, to improve posture and quality of movement, and enhance sporting performance.</p>
+                    <ul class='items l-row f-ai-top m-t-huge'>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-green-bg c-white br-ra-max'>$110</li>
+                                <li class='m-t-small label'>initial</li>
+                                <li>60 mins<li>
+                            </ul>                    
+                        </li>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-green-bg c-white br-ra-max'>$78</li>
+                                <li class='m-t-small label'>1-on-1</li>
+                                <li>45 mins<li>
+                            </ul>    
+                        </li>
+                        <li class='col4'>
+                            <ul class='l-col f-j-center'>
+                                <li class='f4 p-small c-green-bg c-white br-ra-max'>$48 pp</li>
+                                <li class='m-t-small label'>2-on-1</li>
+                                <li>45 mins<li>
+                            </ul>    
+                        </li>
+                    </ul>
+                </div>
             </div>
+            <div class='f h-100'></div>
         </section>
         
         <section id='shop' class='f f-ai-center f-j-center c-grayll-bg'>
-            <div class='container m-container ta-center'>
-                <h2 class='c-graym ta-center'>shop</h2>
-                <hr/>
-                <p class='m-t-huge'>Pilates apparel, Orthotic footwear, Pregnancy Recovery shorts, and all your Physio and Rehab needs</p>
-                <ul class='l-col m-t-huge f-j-start f-ai-start ls-circle c-graym'>
-                    <li>
-                        Abi + Joseph tights, tops, tanks & grip socks             
-                    </li>
-                    <li class='m-t-small'>              
-                        SRC pregnancy & recovery shorts    
-                    </li>
-                    <li class='m-t-small'>            
-                        Compression tights      
-                    </li>
-                    <li class='m-t-small'>             
-                        Orthaheel thongs & sandals     
-                    </li>
-                    <li class='m-t-small'>                  
-                        Physio products (heat packs, massage balls, etc)
-                    </li>
-                    <li class='m-t-small'>        
-                        Exercise rehab equipment          
-                    </li>
-                    <li class='m-t-small'>        
-                        Pillows          
-                    </li>
-                </ul>
+            <div class='f h-100'></div>
+            <div class='container f ta-center f-j-end'>
+                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+                    <h2 class='c-graym ta-center'>shop</h2>
+                    <hr/>
+                    <p class='m-t-huge'>Pilates apparel, Orthotic footwear, Pregnancy Recovery shorts, and all your Physio and Rehab needs</p>
+                    <ul class='items l-col m-t-huge f-j-start f-ai-start ls-circle c-graym'>
+                        <li>
+                            Abi + Joseph tights, tops, tanks & grip socks             
+                        </li>
+                        <li class='m-t-small'>              
+                            SRC pregnancy & recovery shorts    
+                        </li>
+                        <li class='m-t-small'>            
+                            Compression tights      
+                        </li>
+                        <li class='m-t-small'>             
+                            Orthaheel thongs & sandals     
+                        </li>
+                        <li class='m-t-small'>                  
+                            Physio products (heat packs, massage balls, etc)
+                        </li>
+                        <li class='m-t-small'>        
+                            Exercise rehab equipment          
+                        </li>
+                        <li class='m-t-small'>        
+                            Pillows          
+                        </li>
+                    </ul>
+                </div>
             </div>
+            <div class='f h-100 c-white-bg'></div>
         </section>
         
         <section id='crew' class='f f-ai-center f-j-center c-white-bg'>
             <div class='container m-container ta-center'>
                 <h2 class='c-graym'>meet the crew</h2>
                 <hr/>
-                <ul class='l-row m-t-huge f-w'>
+                <ul class='items l-row m-t-huge f-w'>
                     <li class='col3'>
                         <img src='../images/kristy.jpg'/>
                         <div class='label m-t-medium'>physiotherapist</div>
@@ -283,7 +299,7 @@
         </section>
         
         <footer class='f f-ai-center f-j-center c-grayhh-bg c-white'>
-            <div class='m-horizontal-huge m-container'>
+            <div class='w-100 p-horizontal-huge m-container'>
                 <div class='f f-d-row f-ai-start'>
                     <ul class='l-col col3 f-j-start f-ai-start'>
                         <li class='label'>links</li>

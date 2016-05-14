@@ -41,7 +41,7 @@ export abstract class ShellComponent implements IShellComponent {
     private _site: JQuery;
     
     private _top: number;
-    private _scrollBuffer: number = 500;
+    private _scrollBuffer: number = 200;
     private _affectsLayout: boolean = true;
     
     private _isVisible: boolean = false;
@@ -266,6 +266,10 @@ export abstract class Shell implements IShell {
     protected abstract initComponents();
     
     protected onScroll(top: number, bottom: number) {        
+        if (!this._nextComponent) {
+            return;
+        }
+        
         // Check if we're above the threshold to show the next component.
         if (bottom > this._nextComponent.top + this._nextComponent.scrollBuffer) {
             this.currentComponent = this._nextComponent;

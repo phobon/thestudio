@@ -32,13 +32,15 @@ class TheStudio extends Shell {
     
     protected onScroll(top: number, bottom: number) {    
         super.onScroll(top, bottom);
-                  
+                 
+        // Handle when the user scrolls down far enough to enable to minimal header.
         if (top > TheStudio.menuThreshold) {
             (<Components.IHeader>this.component("header")).hilight();
         } else {
             (<Components.IHeader>this.component("header")).lolight();
         }
         
+        // Handle when the user scrolls down far enough to trigger the scroller.
         if (top > TheStudio.scrollerThreshold) {
             this.component("scroller").show();
         } else {

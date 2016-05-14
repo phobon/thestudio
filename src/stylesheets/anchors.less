@@ -4,7 +4,7 @@
 @import "cursor.less";
 @import "font-weight.less";
 
-a {
+.link {
     .f-none;    
     .c-white;
     .cur-pointer;
@@ -14,7 +14,11 @@ a {
     
     &:hover {
         .c-green;
-    }
+    }   
+}
+
+a {
+    .link;
     
     &:visited {
     }

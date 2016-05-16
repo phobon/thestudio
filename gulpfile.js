@@ -19,6 +19,7 @@ var uglify = require("gulp-uglify");
 var less = require('gulp-less');
 var postcss = require('gulp-postcss');
 var nano = require('cssnano');
+var autoprefixer = require('autoprefixer');
 var rename = require('gulp-rename');
 
 // Use this task to just compile the typescript
@@ -39,7 +40,7 @@ gulp.task('tsc', function() {
 
 // Compile less files (css preprocessor)
 gulp.task('less', function() {
-    var processors = [nano];    
+    var processors = [autoprefixer, nano];    
     return gulp.src('./src/stylesheets/thestudio.less')
         .pipe(less())
         .pipe(postcss(processors))

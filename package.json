@@ -17,6 +17,7 @@
     "velocity-animate": "^1.2.3"
   },
   "devDependencies": {
+    "autoprefixer": "^6.3.6",
     "browserify": "^13.0.0",
     "cssnano": "^3.5.2",
     "globby": "^4.0.0",

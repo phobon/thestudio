@@ -5,14 +5,9 @@
 
 @import "sizing.less";
 
-html {
-    .w-100;
-    .h-100;
-}
-
-body {
-    .m-none;
-    .p-none;
+html, body {
+    max-width: 100%;
+    min-width: 100vw;
 }
 
 /* Positions */
@@ -103,4 +98,23 @@ body {
 }
 .f-d-column {
     flex-direction: column;
+}
+
+.order1 {
+    order: 1;
+}
+.order2 {
+    order: 2;
+}
+.order3 {
+    order: 3;
+}
+.order4 {
+    order: 4;
+}
+.order5 {
+    order: 5;
+}
+.order6 {
+    order: 6;
 }

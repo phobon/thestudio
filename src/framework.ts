@@ -1,5 +1,10 @@
 import { Event } from "./common";
 
+export enum RespondType {
+    Mobile,
+    Desktop
+}
+
 export interface IShell {
     site: JQuery;
     components: IShellComponent[];
@@ -34,6 +39,7 @@ export interface IShellComponent {
     show(): JQueryPromise<any>;
     hide(): JQueryPromise<any>;
     destroy();
+    respond(type: RespondType);
 }
 
 export abstract class ShellComponent implements IShellComponent {
@@ -153,6 +159,10 @@ export abstract class ShellComponent implements IShellComponent {
             this.site.remove();
         });        
     }
+    
+    respond(type: RespondType) {
+        // Do nothing here.        
+    }
 }
 
 export abstract class Shell implements IShell {
@@ -163,7 +173,9 @@ export abstract class Shell implements IShell {
     private _currentComponent: IShellComponent;
     private _previousComponent: IShellComponent;
     private _nextComponent: IShellComponent;
-    
+        
+    private _mql: MediaQueryList;
+        
     private _shown: Event<any>;
     private _hidden: Event<any>;
     
@@ -226,13 +238,19 @@ export abstract class Shell implements IShell {
             this.onScroll(top, bottom);
         };
         
-        // TODO: Responsive?
+        // Responsive.
+        this._mql = window.matchMedia(`screen and (min-width: 1028px)`);
+        this._mql.addListener(() => this.onMediaQueryChanged());
+            
+        this.onMediaQueryChanged();
     }
     
     destroy() {
         this._components.forEach(c => {
             this.remove(c);
         });    
+        
+        this._mql.removeListener(() => this.onMediaQueryChanged());
     }
     
     show() {
@@ -274,5 +292,12 @@ export abstract class Shell implements IShell {
         if (bottom > this._nextComponent.top + this._nextComponent.scrollBuffer) {
             this.currentComponent = this._nextComponent;
         }
+    }
+        
+    private onMediaQueryChanged() {
+        var respond = this._mql.matches ? RespondType.Desktop : RespondType.Mobile;        
+        this.components.forEach(c => {
+            c.respond(respond);
+        });
     }
 }

@@ -1,4 +1,4 @@
-import { IShellComponent, ShellComponent } from "./framework";
+import { RespondType, IShellComponent, ShellComponent } from "./framework";
 
 export interface IHeader extends IShellComponent {
     hilight(): JQueryPromise<any>;
@@ -260,6 +260,23 @@ export class What extends SectionComponent {
     constructor(site: JQuery) {
         super("what", site);       
     }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div");
+        var i = this.site.find(".items");
+        switch (type) {
+            case RespondType.Mobile:            
+                i.removeClass("l-row f-ai-start").addClass("l-col");
+                i.find("> li:nth-child(2)").removeClass("m-horizontal-huge").addClass("m-vertical-large");
+                i.find("> li").removeClass("col3");
+            break;
+            case RespondType.Desktop:
+                i.removeClass("l-col").addClass("l-row");
+                i.find("> li:nth-child(2)").removeClass("m-vertical-large").addClass("m-horizontal-huge");
+                i.find("> li").addClass("col3");
+            break;
+        }
+    }
 }
 
 export class Map extends ShellComponent {    
@@ -281,10 +298,8 @@ export class Map extends ShellComponent {
             return d.resolve();
         }
         
-        this.isVisible = true;       
-        
-        this._mask.velocity({ opacity: 0 }, { duration: 1500, easing: "easeOutExpo" });
-       
+        this.isVisible = true;      
+        this._mask.velocity({ opacity: 0 }, { duration: 1500, easing: "easeOutExpo" });       
         return d;    
     }
 }
@@ -319,6 +334,28 @@ export class Where extends ShellComponent {
         this._openingTimes.velocity("transition.slideUpIn", { delay: 200, stagger: 100, drag: true, display: null, complete: () => { d.resolve(); } });
         
         return d;     
+    }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div");   
+        var opening = this.site.find(".opening");
+        var details = this.site.find(".details");
+        switch (type) {
+            case RespondType.Mobile:
+                opening.addClass("w-100 p-horizontal-huge");
+                details.addClass("w-100 p-horizontal-huge");
+                container.removeClass("f-d-row").addClass("f-d-column");
+                opening.removeClass("col3").addClass("m-t-huge");
+                details.find(".detail").removeClass("f4");
+            break;
+            case RespondType.Desktop:
+                opening.removeClass("w-100 m-horizontal-huge");
+                details.removeClass("w-100 m-horizontal-huge");
+                container.removeClass("f-d-column").addClass("f-d-row");
+                opening.removeClass("m-t-huge").addClass("col3");
+                details.find(".detail").addClass("f4");
+            break;
+        }
     }
 }
 
@@ -376,6 +413,23 @@ export class Philosophy extends SectionComponent {
     constructor(site: JQuery) {
         super("philosophy", site);   
     }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div");   
+        var items = this.site.find(".items");
+        switch (type) {
+            case RespondType.Mobile:            
+                items.removeClass("l-row f-ai-start").addClass("l-col");
+                items.find("> li:first-child").removeClass("m-r-huge");
+                items.find("> li").removeClass("col3").addClass("m-horizontal-huge");
+            break;
+            case RespondType.Desktop:
+                items.removeClass("l-col").addClass("l-row f-ai-start");
+                items.find("> li:first-child").addClass("m-r-huge");
+                items.find("> li").removeClass("m-horizontal-huge").addClass("col3");
+            break;
+        }
+    }
 }
 
 export class Physiotherapy extends ServiceComponent {    
@@ -399,6 +453,27 @@ export class Pilates extends ServiceComponent {
 export class Crew extends SectionComponent {    
     constructor(site: JQuery) {
         super("crew", site);        
+    }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div");   
+        var items = this.site.find(".items");
+        switch (type) {
+            case RespondType.Mobile:            
+                items.removeClass("l-row").addClass("l-col");
+                items.find("> li").removeClass("col3").addClass("m-t-huge");
+                items.find("> li:first-child").removeClass("m-t-huge");
+            break;
+            case RespondType.Desktop:
+                items.removeClass("l-col").addClass("l-row");
+                items.find("> li").each((i, e) => {
+                    if (i < 3) {
+                        $(e).removeClass("m-t-huge");
+                    }
+                    $(e).addClass("col3");
+                });
+            break;
+        }
     }
 }
 

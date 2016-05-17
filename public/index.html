@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8" name="keywords" content="physio,physiotherapy,physiotherapists,pilates,clinical pilates,sports injury,rehab,posture,massage,accupuncture,dry needling,injury prevention,pain relief,movement,perth,western australia,subiaco">
@@ -24,9 +25,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/velocity/1.2.3/velocity.ui.min.js"></script>
     </head>
-    <body class='m-none p-none c-grayh'>
-        <section id='header' class='f f-ai-center f-j-center p-vertical-small p-horizontal-huge fixed w-100 z5' style='top:0'>
-            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" class='c-white-f'>
+    <body class='m-none p-none c-grayh o-x-hidden'>
+        <section id='header' class='f f-ai-center f-j-center p-vertical-small p-horizontal-huge fixed w-100 z3' style='top:0'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" class='c-white-f z5'>
                 <title>thestudio</title>
                 <path d="M40,0A40,40,0,1,0,80,40,40,40,0,0,0,40,0ZM68.48,54.67a32,32,0,0,1-57,0l-0.13-.26a32,32,0,1,1,57.23,0Z" class="o-50"/>
                 <path d="M42.38,48.32L40,50.69l1.25,1.25,2.38-2.38-0.39-.39Z" class="o-50"/>
@@ -36,19 +37,20 @@
                 <path d="M40,11.32A28.68,28.68,0,0,0,11.32,40c0,0.73,0,1.45.09,2.17A13.43,13.43,0,0,1,27.08,35.4a13.44,13.44,0,1,1,25.83,0,13.43,13.43,0,0,1,15.67,6.77c0.05-.72.09-1.44,0.09-2.17A28.68,28.68,0,0,0,40,11.32Z"/>
                 <path d="M49.51,41.19l-6.15,6.15-0.13.13-0.86.86,0.86,0.86,0.39,0.39,5.88,5.88a10.08,10.08,0,0,0,16-2.36l0.11-.22A10.08,10.08,0,0,0,49.51,41.19Z"/>
             </svg>
-            <div class='f'></div>
-            <nav class='f-none f-ai-center f-d-row'>
+            <div class='f'></div>            
+            <nav class='f-none f-ai-center f-d-row z4 o-0'>
                 <div data-target='#map' class='link m-r-large'>where</div>
                 <div data-target='#physiotherapy' class='link m-r-large'>physio</div>
                 <div data-target='#clinicalpilates' class='link m-r-large'>pilates</div>
                 <div data-target='#shop' class='link m-r-large'>shop</div>
-                <div data-target='#crew' class='link m-r-large'>crew</div>
-                <a href='#' class='b-outline'>make a booking</a>
-            <nav>
+                <div data-target='#crew' class='link m-r-large'>crew</div> 
+                <a href='#' class='booking b-outline o-0 pe-none'>make a booking</a>                             
+            </nav>
+            <div class='minimal f-none z5 d-none'>menu</div>                          
         </section>
         
-        <section id='brand' class='h-100 f f-j-center c-white'>            
-            <div class='container f f-ai-center h-100 f-j-center f-d-column'>
+        <section id='brand' class='vh-min-100 h-100 f f-j-center c-white'>            
+            <div class='container f f-ai-center vh-min-100 h-100 f-j-center f-d-column'>
                 <div class='f'></div>
                 <div class='f f-d-column ta-center f-j-center f-ai-center'>
                     <h1>feel better again.</h1>
@@ -90,11 +92,12 @@
         </section>
         
         <section id='map' class='w-100'>
-            <div class='h-100 w-100 f c-white-bg'></div>
+            <iframe class='w-100 h-100' frameborder="0" style="border: 0px; pointer-events: none;" src="https://www.google.com/maps/embed/v1/place?q=The%20Studio%20Physiotherapy%20&amp;key=AIzaSyBZq9HLnT1O9gM8cUgwBfLqLe-GA1i2UFE&amp;zoom=19"></iframe>
+            <div class='h-100 w-100 f c-white-bg z5'></div>
         </section>
         
         <section id='where' class='f f-j-center c-grayll-bg'>
-            <div class='container m-vertical-huge f f-ai-center f-d-row'>
+            <div class='container m-vertical-huge f-none f-ai-center f-d-row'>
                 <ul class='details l-column'>
                     <li>
                         <div class='label'>address</div>
@@ -160,10 +163,10 @@
             </div>
         </section>
         
-        <section id='physiotherapy' class='f f-ai-center c-grayll-bg'>
+        <section id='physiotherapy' class='f f-ai-center c-grayll-bg service-full'>
             <div class='f h-100'></div>
-            <div class='container f ta-center f-j-end'>
-                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+            <div class='container f ta-center f-j-end h-100'>
+                <div class='service-description f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
                     <h2 class='c-graym'>physio</h2>
                     <hr/>
                     <p class='m-t-huge'>Physiotherapy consultation involves thorough assessment and treatment of a range of conditions</p>
@@ -195,10 +198,10 @@
             <div class='f h-100 c-white-bg'></div>
         </section>
         
-        <section id='clinicalpilates' class='f f-ai-center f-j-center'>
+        <section id='clinicalpilates' class='f f-ai-center f-j-center service-full'>
             <div class='f h-100 c-white-bg'></div>
-            <div class='container f ta-center f-j-start'>
-                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+            <div class='container f ta-center f-j-start h-100'>
+                <div class='service-description f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
                     <h2 class='c-graym'>clinical pilates</h2>
                     <hr/>
                     <p class='m-t-huge'>Clinical Pilates is used in the treatment and rehabilitation of injuries and chronic conditions, as pre-and-post natal management, to prevent pain and injury, to improve posture and quality of movement, and enhance sporting performance.</p>
@@ -219,7 +222,7 @@
                         </li>
                         <li class='col4'>
                             <ul class='l-col f-j-center'>
-                                <li class='f4 p-small c-green-bg c-white br-ra-max'>$48 pp</li>
+                                <li class='f4 p-small c-green-bg c-white br-ra-max'>$48pp</li>
                                 <li class='m-t-small label'>2-on-1</li>
                                 <li>45 mins<li>
                             </ul>    
@@ -230,14 +233,14 @@
             <div class='f h-100'></div>
         </section>
         
-        <section id='shop' class='f f-ai-center f-j-center c-grayll-bg'>
+        <section id='shop' class='f f-ai-center f-j-center c-grayll-bg service-full'>
             <div class='f h-100'></div>
-            <div class='container f ta-center f-j-end'>
-                <div class='f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
+            <div class='container f ta-center f-j-end h-100'>
+                <div class='service-description f-none w-70 f-d-column f-j-center h-100 c-white-bg p-horizontal-huge'>
                     <h2 class='c-graym ta-center'>shop</h2>
                     <hr/>
                     <p class='m-t-huge'>Pilates apparel, Orthotic footwear, Pregnancy Recovery shorts, and all your Physio and Rehab needs</p>
-                    <ul class='items l-col m-t-huge f-j-start f-ai-start ls-circle c-graym'>
+                    <ul class='items l-col m-t-huge f-j-start f-ai-start ls-circle c-graym ta-left'>
                         <li>
                             Abi + Joseph tights, tops, tanks & grip socks             
                         </li>
@@ -301,8 +304,8 @@
         
         <footer class='f f-ai-center f-j-center c-grayhh-bg c-white'>
             <div class='w-100 p-horizontal-huge m-container'>
-                <div class='f f-d-row f-ai-start'>
-                    <ul class='l-col col3 f-j-start f-ai-start'>
+                <div class='footer-container f f-d-row f-ai-start'>
+                    <ul class='links l-col col3 f-j-start f-ai-start'>
                         <li class='label'>links</li>
                         <li class='m-t-small'>
                             <a href='http://physiotherapy.asn.au' target='_blank'>APA</a>
@@ -324,26 +327,31 @@
                         </li>
                     </ul>
                 
-                    <ul class='l-col col3 f-j-start f-ai-start'>
+                    <ul class='follows l-col col3 f-j-start f-ai-start'>
                         <li class='label'>follow us</li>
                         <li class='m-t-small'>
-                            <a class='b-glyph' href='http://facebook.com/thestudiophysio' target='_blank'>
-                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0" y="0" width="13.5" height="24px" viewBox="0 0 9 16" xml:space="preserve" enable-background="new 0 0 9 16"><g id="Facebook_1"><path d="M9 3H7C6.7 3 6 3.47 6 4v2h3v3H6v7H3V9H0V6h3V4c0-2.21 1.96-4 4.06-4H9V3z"/></g></svg>
-                            </a>
-                        </li>
-                        <li class='b-glyph'>
-                            <a class='b-glyph' href='http://twitter.com/thestudiophysio' target='_blank'>
-                                <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 15.995 13.004" enable-background="new 0 0 15.995 13.004"><g><path d="M15.995 1.539c-0.589 0.262-1.221 0.438-1.885 0.518 0.678-0.406 1.197-1.049 1.443-1.816 -0.635 0.377-1.338 0.65-2.085 0.797C12.87 0.398 12.016 0 11.073 0 9.259 0 7.79 1.471 7.79 3.283c0 0.258 0.029 0.508 0.085 0.748 -2.728-0.137-5.147-1.443-6.767-3.43C0.827 1.086 0.665 1.65 0.665 2.252c0 1.139 0.758 2.143 1.639 2.732C1.765 4.967 0.995 4.818 0.995 4.572c0 0.016 0 0.029 0 0.043 0 1.59 0.953 2.916 2.454 3.219C3.173 7.908 2.795 7.949 2.495 7.949c-0.212 0-0.461-0.021-0.663-0.061 0.418 1.305 1.608 2.254 3.044 2.281 -1.123 0.879-2.55 1.404-4.087 1.404 -0.266 0-0.532-0.016-0.789-0.045 1.453 0.93 3.175 1.475 5.029 1.475 6.039 0 9.338-5.002 9.338-9.34 0-0.143-0.004-0.285-0.011-0.426C14.999 2.775 15.555 2.197 15.995 1.539z"/></g></svg>
-                            </a>
+                            <ul class='l-row'>
+                                <li>
+                                    <a class='b-glyph' href='http://facebook.com/thestudiophysio' target='_blank'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="Layer_1" x="0" y="0" width="13.5" height="24px" viewBox="0 0 9 16" xml:space="preserve" enable-background="new 0 0 9 16"><g id="Facebook_1"><path d="M9 3H7C6.7 3 6 3.47 6 4v2h3v3H6v7H3V9H0V6h3V4c0-2.21 1.96-4 4.06-4H9V3z"/></g></svg>
+                                    </a>
+                                </li>
+                                <li class='m-l-large'>
+                                    <a class='b-glyph' href='http://twitter.com/thestudiophysio' target='_blank'>
+                                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="24px" height="24px" viewBox="0 0 15.995 13.004" enable-background="new 0 0 15.995 13.004"><g><path d="M15.995 1.539c-0.589 0.262-1.221 0.438-1.885 0.518 0.678-0.406 1.197-1.049 1.443-1.816 -0.635 0.377-1.338 0.65-2.085 0.797C12.87 0.398 12.016 0 11.073 0 9.259 0 7.79 1.471 7.79 3.283c0 0.258 0.029 0.508 0.085 0.748 -2.728-0.137-5.147-1.443-6.767-3.43C0.827 1.086 0.665 1.65 0.665 2.252c0 1.139 0.758 2.143 1.639 2.732C1.765 4.967 0.995 4.818 0.995 4.572c0 0.016 0 0.029 0 0.043 0 1.59 0.953 2.916 2.454 3.219C3.173 7.908 2.795 7.949 2.495 7.949c-0.212 0-0.461-0.021-0.663-0.061 0.418 1.305 1.608 2.254 3.044 2.281 -1.123 0.879-2.55 1.404-4.087 1.404 -0.266 0-0.532-0.016-0.789-0.045 1.453 0.93 3.175 1.475 5.029 1.475 6.039 0 9.338-5.002 9.338-9.34 0-0.143-0.004-0.285-0.011-0.426C14.999 2.775 15.555 2.197 15.995 1.539z"/></g></svg>
+                                    </a>
+                                </li>
+                            </ul>
+                            
                         </li>
                     </ul>
                 </div>
                 
-                <ul class='l-row m-t-huge f-j-start f-ai-center'>
+                <ul class='legal l-row m-t-huge f-j-start f-ai-center'>
                     <li>
                         <a href='#'>legal</a>
                     </li>
-                    <li class='m-l-large'>
+                    <li class='m-l-huge'>
                         <a href='#'>trust policy</a>
                     </li>
                     <li class='m-l-huge c-grayl'>

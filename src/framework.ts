@@ -9,6 +9,9 @@ export interface IShell {
     site: JQuery;
     components: IShellComponent[];
     
+    currentComponent: IShellComponent;
+    currentRespond: RespondType;
+    
     shown: Event<any>;
     hidden: Event<any>;
     
@@ -175,6 +178,7 @@ export abstract class Shell implements IShell {
     private _nextComponent: IShellComponent;
         
     private _mql: MediaQueryList;
+    private _currentRespond: RespondType;
         
     private _shown: Event<any>;
     private _hidden: Event<any>;
@@ -213,6 +217,10 @@ export abstract class Shell implements IShell {
         var next = this.components[index + 1];
                 
         this._nextComponent = next.affectsLayout ? next : null;
+    }
+    
+    get currentRespond(): RespondType {
+        return this._currentRespond;
     }
     
     get shown(): Event<any> {
@@ -295,9 +303,9 @@ export abstract class Shell implements IShell {
     }
         
     private onMediaQueryChanged() {
-        var respond = this._mql.matches ? RespondType.Desktop : RespondType.Mobile;        
+        this._currentRespond = this._mql.matches ? RespondType.Desktop : RespondType.Mobile;        
         this.components.forEach(c => {
-            c.respond(respond);
+            c.respond(this._currentRespond);
         });
     }
 }

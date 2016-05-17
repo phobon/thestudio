@@ -1,4 +1,4 @@
-import { IShell, IShellComponent, Shell } from "./framework";
+import { IShell, IShellComponent, Shell, RespondType } from "./framework";
 import Components = require("./components");
 
 var shell: IShell;
@@ -34,11 +34,13 @@ class TheStudio extends Shell {
         super.onScroll(top, bottom);
                  
         // Handle when the user scrolls down far enough to enable to minimal header.
-        if (top > TheStudio.menuThreshold) {
-            (<Components.IHeader>this.component("header")).hilight();
-        } else {
-            (<Components.IHeader>this.component("header")).lolight();
-        }
+        if (this.currentRespond === RespondType.Desktop) {
+            if (top > TheStudio.menuThreshold) {
+                (<Components.IHeader>this.component("header")).hilight();
+            } else {
+                (<Components.IHeader>this.component("header")).lolight();
+            }
+        }        
         
         // Handle when the user scrolls down far enough to trigger the scroller.
         if (top > TheStudio.scrollerThreshold) {

@@ -2,17 +2,21 @@ import { RespondType, IShellComponent, ShellComponent } from "./framework";
 
 export interface IHeader extends IShellComponent {
     hilight(): JQueryPromise<any>;
-    lolight(): JQueryPromise<any>;    
+    lolight(): JQueryPromise<any>;   
+    
+    expand(): JQueryPromise<any>;
+    collapse(): JQueryPromise<any>; 
 }
 
 export class Header extends ShellComponent implements IHeader {
     private _isHilighted: boolean;
+    private _isExpanded: boolean;
     private _height: number;
     
     private _glyph: JQuery;
     private _nav: JQuery;
-    // private _glyphTranslate: number;
-    // private _navTranslate: number;
+    private _minimal: JQuery;
+    private _booking: JQuery;
     
     constructor(site: JQuery) {
         super("header", site, false);
@@ -27,15 +31,17 @@ export class Header extends ShellComponent implements IHeader {
         // Cache some of the sites here so we can manipulate them individually.
         this._glyph = this.site.find("> svg");
         this._nav = this.site.find("nav");
+        this._minimal = this.site.find(".minimal");
+        this._booking = this.site.find(".booking");
         
         this._glyph.velocity({ opacity: 0 }, { duration: 0 });
-        this._nav.velocity({ opacity: 0 }, { duration: 0 });
+        this._booking.velocity({ opacity: 0 }, { duration: 0 });
+        
+        this._minimal.on("click", () => {
+            this._isExpanded ? this.collapse() : this.expand();
+        });
         
         this.setupLinks();
-        
-        // Cache some dimensions so we can easily transition things.
-        // this._glyphTranslate = -(this._glyph.position().left + this._glyph.outerWidth());
-        // this._navTranslate = this._nav.outerWidth();
     }
     
     show(): JQueryPromise<any> {
@@ -52,17 +58,40 @@ export class Header extends ShellComponent implements IHeader {
                 o: { duration: 450, easing: "easeOutExpo" }
             },
             { 
-                e: this._nav, 
+                e: this._booking, 
                 p: { translateY: [0, -this._height], opacity: 1 }, 
-                o: { duration: 450, easing: "easeOutExpo", sequenceQueue: false, delay: 100, complete: () => {
+                o: { duration: 450, easing: "easeOutExpo", sequenceQueue: false, delay: 200, complete: () => {
                         d.resolve();
                     } 
                 }
-            },
+            }
         ]   
         
         $.Velocity.RunSequence(s);
         return d;     
+    }
+    
+    expand(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        if (this._isExpanded) {
+            return d.resolve();
+        }
+        
+        this._isExpanded = true;     
+        this._nav.removeClass("pe-none");  
+        this._nav.velocity({ opacity: 1 }, { duration: 200, easing: "easeOutExpo", complete: () => { d.resolve(); } });
+        return d;
+    }    
+    
+    collapse(): JQueryPromise<any> {
+        var d = $.Deferred<any>();
+        if (!this._isExpanded) {
+            return d.resolve();
+        }
+        
+        this._isExpanded = false;   
+        this._nav.velocity({ opacity: 0 }, { duration: 200, easing: "easeOutExpo", complete: () => { d.resolve(); } });
+        return d;    
     }
            
     hilight(): JQueryPromise<any> {        
@@ -132,12 +161,47 @@ export class Header extends ShellComponent implements IHeader {
         return d;        
     }
     
+    respond(type: RespondType) {
+        switch (type) {
+            case RespondType.Mobile:      
+                this.site.removeClass("p-horizontal-huge").addClass("p-horizontal-small");      
+                this._glyph.removeClass('c-white-f').addClass('c-graym-f');
+                this._glyph.css({ width: 50, height: 50 });
+                this._nav.removeClass("f-none f-d-row").addClass("absolute pe-none f f-j-center vw-100 vh-100 c-grayhh-t-bg f-d-column");
+                this._nav.css({ left: 0, top: 0 });
+                
+                this._nav.find("> div").removeClass("m-r-large").addClass("m-b-huge");
+                
+                this._minimal.removeClass("d-none");
+            break;
+            case RespondType.Desktop:
+                this.site.removeClass("p-horizontal-small").addClass("p-horizontal-huge");      
+                this._glyph.removeClass('c-grayl-f').addClass('c-white-f');
+                this._glyph.css({ width: 80, height: 80 });
+                this._nav.removeClass("absolute o-0 pe-none f vw-100 vh-100 c-grayhh-t-bg f-d-column").addClass("f-none f-d-row");
+                this._nav.css({ left: '', top: '' });
+                
+                this._nav.find("> div").removeClass("m-b-huge").addClass("m-r-large");
+                
+                this._minimal.addClass("d-none");
+            break;
+        }
+    }
+    
+    destroy() {
+        super.destroy();
+        this._minimal.off("click", () => {
+            this._isExpanded ? this.collapse() : this.expand();
+        });
+    }
+    
     private setupLinks() {
         this._nav.find("> div").each((i, e) => {
             let link = $(e);
             let target = link.data("target");
             link.on("click", () => {                
                 $(target).velocity("scroll", { duration: 1000, easing: "easeOutExpo" });
+                this.collapse();
             });
         });
     }
@@ -232,6 +296,7 @@ export abstract class SectionComponent extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
+        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -293,6 +358,7 @@ export class Map extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
+        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -323,6 +389,7 @@ export class Where extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
+        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -341,18 +408,16 @@ export class Where extends ShellComponent {
         var opening = this.site.find(".opening");
         var details = this.site.find(".details");
         switch (type) {
-            case RespondType.Mobile:
-                opening.addClass("w-100 p-horizontal-huge");
-                details.addClass("w-100 p-horizontal-huge");
-                container.removeClass("f-d-row").addClass("f-d-column");
-                opening.removeClass("col3").addClass("m-t-huge");
-                details.find(".detail").removeClass("f4");
+            case RespondType.Mobile:                
+                container.removeClass("f-d-row container").addClass("f-d-column w-100 p-horizontal-large");
+                details.addClass("w-100");
+                opening.removeClass("col3").addClass("w-100 m-t-huge");
+                details.find(".detail").removeClass("f4");                
             break;
             case RespondType.Desktop:
-                opening.removeClass("w-100 m-horizontal-huge");
-                details.removeClass("w-100 m-horizontal-huge");
-                container.removeClass("f-d-column").addClass("f-d-row");
-                opening.removeClass("m-t-huge").addClass("col3");
+                container.removeClass("f-d-column w-100 p-horizontal-large").addClass("f-d-row container");
+                details.removeClass("w-100");                
+                opening.removeClass("w-100 m-t-huge").addClass("col3");
                 details.find(".detail").addClass("f4");
             break;
         }
@@ -360,10 +425,10 @@ export class Where extends ShellComponent {
 }
 
 export abstract class ServiceComponent extends ShellComponent {
-    private _headline: JQuery;
-    private _hr: JQuery;
-    private _blurb: JQuery;
-    private _items: JQuery;
+    protected _headline: JQuery;
+    protected _hr: JQuery;
+    protected _blurb: JQuery;
+    protected _items: JQuery;
     
     constructor(id: string, site: JQuery, affectsLayout = true) {
         super(id, site, affectsLayout);
@@ -384,6 +449,7 @@ export abstract class ServiceComponent extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
+        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -406,6 +472,29 @@ export abstract class ServiceComponent extends ShellComponent {
         
         $.Velocity.RunSequence(s);
         return d;     
+    }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div:nth-child(2)");   
+        var serviceDescription = this.site.find(".service-description");
+        switch (type) {
+            case RespondType.Mobile:          
+                this.site.removeClass("service-full");
+                container.removeClass("container");
+                serviceDescription.removeClass("f-none w-70 p-horizontal-huge c-white-bg").addClass("f w-100 p-horizontal-small p-container c-grayhh-t-bg");
+                this._items.removeClass("col4").addClass("col3 c-white");     
+                this._headline.removeClass("c-graym").addClass("c-white");    
+                this._blurb.addClass("c-white");  
+            break;
+            case RespondType.Desktop:
+                this.site.addClass("service-full");
+                container.addClass("container");
+                serviceDescription.removeClass("f w-100 p-horizontal-small p-container c-grayhh-t-bg").addClass("f-none w-70 p-horizontal-huge c-white-bg");
+                this._items.removeClass("col3 c-white").addClass("col4");     
+                this._headline.removeClass("c-white").addClass("c-graym");    
+                this._blurb.removeClass("c-white");  
+            break;
+        }
     }
 }
 
@@ -441,6 +530,31 @@ export class Physiotherapy extends ServiceComponent {
 export class Shop extends ServiceComponent {
     constructor(site: JQuery) {
         super("shop", site);
+    }
+    
+    respond(type: RespondType) {
+        var container = this.site.find("> div:nth-child(2)");   
+        var serviceDescription = this.site.find(".service-description");
+        switch (type) {
+            case RespondType.Mobile:          
+                this.site.removeClass("service-full");
+                container.removeClass("container");
+                serviceDescription.removeClass("f-none w-70 p-horizontal-huge c-white-bg").addClass("f w-100 p-horizontal-small p-container c-grayhh-t-bg");
+                this.site.find(".items").addClass("p-horizontal-large");
+                this._items.addClass("c-grayll");     
+                this._headline.removeClass("c-graym").addClass("c-white");    
+                this._blurb.addClass("c-white");  
+            break;
+            case RespondType.Desktop:
+                this.site.addClass("service-full");
+                container.addClass("container");
+                serviceDescription.removeClass("f w-100 p-horizontal-small p-container c-grayhh-t-bg").addClass("f-none w-70 p-horizontal-huge c-white-bg");
+                this.site.find(".items").removeClass("p-horizontal-large");
+                this._items.removeClass("c-grayll")  
+                this._headline.removeClass("c-white").addClass("c-graym");    
+                this._blurb.removeClass("c-white");  
+            break;
+        }
     }
 }
 
@@ -482,6 +596,31 @@ export class Footer extends ShellComponent {
         super("footer", site);        
         this.scrollBuffer = 100;
     }
+    
+    respond(type: RespondType) {
+        var container = this.site.find(".footer-container");   
+        var links = this.site.find(".links");   
+        var follows = this.site.find(".follows");
+        var legal = this.site.find(".legal");
+        switch (type) {
+            case RespondType.Mobile:    
+                container.removeClass("f-d-row").addClass("f-d-column");               
+                links.removeClass("col3").addClass("w-100");
+                follows.removeClass("col3").addClass("w-100 m-t-huge");     
+                legal.removeClass("l-row f-ai-center").addClass("l-col f-ai-start"); 
+                
+                legal.find("> li").removeClass("m-l-huge"); 
+            break;
+            case RespondType.Desktop:
+                container.removeClass("f-d-column").addClass("f-d-row");               
+                links.removeClass("w-100").addClass("col3");
+                follows.removeClass("w-100 m-t-huge").addClass("col3");     
+                legal.removeClass("l-col f-ai-start").addClass("l-row f-ai-center");   
+                legal.find("> li").addClass("m-l-huge"); 
+                legal.find("> li:first-child").removeClass("m-l-huge");
+            break;
+        }
+    }
 }
 
 export class Scroller extends ShellComponent {
@@ -521,6 +660,17 @@ export class Scroller extends ShellComponent {
     destroy() {
         this.site.off("click");
         super.destroy();
+    }
+    
+    respond(type: RespondType) {
+        switch (type) {
+            case RespondType.Mobile:   
+                this.site.removeClass("m-huge").addClass("m-small");         
+            break;
+            case RespondType.Desktop:
+                this.site.removeClass("m-small").addClass("m-huge"); 
+            break;
+        }
     }
     
     private onClick() {

@@ -79,7 +79,23 @@ export class Header extends ShellComponent implements IHeader {
         
         this._isExpanded = true;     
         this._nav.removeClass("pe-none");  
-        this._nav.velocity({ opacity: 1 }, { duration: 200, easing: "easeOutExpo", complete: () => { d.resolve(); } });
+        
+        var children = this._nav.children();
+        children.velocity({ opacity: 0}, { duration: 0 });        
+        
+        this._nav.velocity(
+            { opacity: 1 }, 
+            {
+                duration: 600, 
+                easing: "easeOutExpo", 
+                complete: () => { 
+                    this.site.find(".hamburger").addClass("d-none");
+                    this.site.find(".close").removeClass("d-none");
+                    children.velocity("transition.slideLeftIn", { duration: 250, drag: true, stagger: 100, complete: () => { d.resolve(); } });
+                } 
+            }
+        );        
+        
         return d;
     }    
     
@@ -90,7 +106,15 @@ export class Header extends ShellComponent implements IHeader {
         }
         
         this._isExpanded = false;   
-        this._nav.velocity({ opacity: 0 }, { duration: 200, easing: "easeOutExpo", complete: () => { d.resolve(); } });
+        var children = this._nav.children();
+        children.velocity("transition.slideRightOut", { duration: 200, display: null, drag: true, stagger: 100, complete: () => {
+            this.site.find(".hamburger").removeClass("d-none");
+            this.site.find(".close").addClass("d-none");
+            this._nav.velocity({ opacity: 0 }, { duration: 300, complete: () => {                
+                d.resolve();
+            }});
+        }});        
+        
         return d;    
     }
            
@@ -165,12 +189,13 @@ export class Header extends ShellComponent implements IHeader {
         switch (type) {
             case RespondType.Mobile:      
                 this.site.removeClass("p-horizontal-huge").addClass("p-horizontal-small");      
-                this._glyph.removeClass('c-white-f').addClass('c-graym-f');
+                this._glyph.removeClass('c-white-f').addClass('c-grayl-f');
                 this._glyph.css({ width: 50, height: 50 });
                 this._nav.removeClass("f-none f-d-row").addClass("absolute pe-none f f-j-center vw-100 vh-100 c-grayhh-t-bg f-d-column");
                 this._nav.css({ left: 0, top: 0 });
                 
-                this._nav.find("> div").removeClass("m-r-large").addClass("m-b-huge");
+                this._nav.find("> div").removeClass("m-r-large").addClass("m-b-huge o-0");
+                this._nav.find("> a").velocity({ opacity: 0 }, { duration: 0 });
                 
                 this._minimal.removeClass("d-none");
             break;
@@ -181,7 +206,8 @@ export class Header extends ShellComponent implements IHeader {
                 this._nav.removeClass("absolute o-0 pe-none f vw-100 vh-100 c-grayhh-t-bg f-d-column").addClass("f-none f-d-row");
                 this._nav.css({ left: '', top: '' });
                 
-                this._nav.find("> div").removeClass("m-b-huge").addClass("m-r-large");
+                this._nav.find("> div").removeClass("m-b-huge o-0").addClass("m-r-large");
+                this._nav.find("> a").velocity({ opacity: 1 }, { duration: 0 });
                 
                 this._minimal.addClass("d-none");
             break;

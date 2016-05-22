@@ -322,7 +322,6 @@ export abstract class SectionComponent extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
-        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -384,7 +383,6 @@ export class Map extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
-        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -412,10 +410,18 @@ export class Where extends ShellComponent {
         
         this._details.velocity({ opacity: 0 }, { duration : 0 });
         this._openingTimes.velocity({ opacity: 0 }, { duration : 0 });
+        
+        // Determine the correct opening day here and hilight it.
+        var d = new Date();
+        this.site.find(`[data-day=${d.getDay()}]`).addClass("green-tab");
+        
+        // Set up the contact email correctly.
+        var mailLink = this.site.find(".mail-link");
+        mailLink.attr("href", `mailto:reception@thestudiophysio.com`);
+        mailLink.text("reception@thestudiophysio.com");
     }
     
     show(): JQueryPromise<any> {
-        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();
@@ -475,7 +481,6 @@ export abstract class ServiceComponent extends ShellComponent {
     }
     
     show(): JQueryPromise<any> {
-        console.debug(`${this.id}: shown`);
         var d = $.Deferred<any>();
         if (this.isVisible) {
             return d.resolve();

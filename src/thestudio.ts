@@ -8,11 +8,24 @@ class TheStudio extends Shell {
     private static menuThreshold: number = 350;
     
     show() {        
-        // TODO: Determine where on the page the user is and get the correct components.
-        // TODO: For now, just show the navigation and brand components.        
         this.component("header").show().done(() => {
-            this.currentComponent = this.component("brand");
+            var w = $(window);
+            var top = w.scrollTop();
+            var bottom = top + w.height();
+            for (let i = 0; i < this.components.length; i++) {
+                let c = this.components[i];
+                if (!c.affectsLayout) {
+                    continue;
+                }
+                
+                if (c.top > top && c.top < bottom) {
+                    c.show();                    
+                    break;
+                }
+            };
         });
+        
+        this.currentComponent = this.component("brand");
     }    
     
     protected initComponents() {

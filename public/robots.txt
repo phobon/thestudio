@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: *.asp
+Allow: index.html
+
+User-agent: APIs-Google (+https://developers.google.com/webmasters/APIs-Google.html)
+Disallow:

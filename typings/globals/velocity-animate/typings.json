@@ -1,0 +1,8 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/455bf06f0a42a41557d77f07a3bef49b91950f1c/velocity-animate/velocity-animate.d.ts",
+    "raw": "registry:dt/velocity-animate#1.2.2+20161016143552",
+    "typings": "https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/455bf06f0a42a41557d77f07a3bef49b91950f1c/velocity-animate/velocity-animate.d.ts"
+  }
+}

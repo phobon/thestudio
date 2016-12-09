@@ -24,13 +24,12 @@ var rename = require('gulp-rename');
 
 // Use this task to just compile the typescript
 gulp.task('tsc', function() {
-    var result = gulp.src(['./src/**/*.ts', './typings/main/**/*.ts'])    
+    var result = gulp.src(['./src/**/*.ts', './typings/**/*.ts'])    
         .pipe(sourcemaps.init())
         .pipe(tsc({
             noExternalResolve: false,
             target: 'ES5',
-            module: 'commonjs',
-            moduleResolution: 'classic'
+            module: 'commonjs'
         }));
         
     return result.js

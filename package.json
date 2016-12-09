@@ -29,6 +29,7 @@
     "gulp-sourcemaps": "^2.0.0-alpha",
     "gulp-typescript": "^2.13.0",
     "gulp-uglify": "^1.5.3",
+    "jquery": "^2.2.4",
     "through2": "^2.0.1",
     "typings": "^0.8.1",
     "vinyl-buffer": "^1.0.0",

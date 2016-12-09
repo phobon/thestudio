@@ -1,5 +1,5 @@
 # the studio, physiotherapy and clinical pilates
-Small business site for a physiotherapy practice located in Perth, Western Australia [http://thestudiophysio.com]
+Small business site for a physiotherapy practice located in Perth, Western Australia [http://phobon.io/thestudio]
 
 ## what was used to make it
 I used **jquery**, **velocity** and built it all in typescript
